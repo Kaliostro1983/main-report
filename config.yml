@@ -1,0 +1,50 @@
+paths:
+  freq_file: "d:\\Armor\\Frequencies_63.xlsx"
+  reports_dir: "c:\\Downloads\\"
+  report_mask: "report_*.xlsx"
+  beamshots_dir: "d:\\Armor\\pelengy\\"
+  output_dir: "build"
+
+tz: "Europe/Kyiv"
+
+columns:
+  reference:
+    # колонки з Frequencies_63.xlsx
+    frequency: "Частота"
+    name: "Радіомережа"      # назва мережі
+    purpose: "Тип"           # тимчасово як «призначення» (можемо змінити)
+    nodes: "Підрозділ"       # тимчасово як «вузли зв’язку», якщо буде інша колонка — підставимо
+    tags: "Хто"              # мітка для групування
+  intercepts:
+    # колонки з report_2025-10-01T12-00_2025-10-01T16-30.xlsx
+    date: "Дата"
+    time: "Час"
+    frequency: "Частота"
+    from_callsign: "хто"
+    to_callsign: "кому"
+    message: "р\\обмін"
+    comment: "примітки"
+
+grouping:
+  allowed_tags:
+    - "31 мсп"
+    - "36 мсп"
+    - "37 мсп"
+    - "164 омсбр"
+  other_bucket: "Інші радіомережі"
+
+  # НОВЕ: правила нормалізації міток «Хто»
+  tag_normalization:
+    # 1) Явні відповідності (пріоритетні)
+    map:
+      "36 мсп 67 мсд 25 ЗА": "36 мсп"
+      "31 мсп 67 мсд 25 ЗА": "31 мсп"
+      "37 мсп 67 мсд 25 ЗА": "37 мсп"
+      "164 омсбр 25 ЗА":     "164 омсбр"
+
+    # 2) Шаблони (regex, застосовуються якщо в map не знайшлося)
+    patterns:
+      - match: "(?i)^\\s*(\\d+)\\s*мсп\\b.*$"
+        to:    "\\1 мсп"
+      - match: "(?i)^\\s*(\\d+)\\s*омсбр\\b.*$"
+        to:    "\\1 омсбр"

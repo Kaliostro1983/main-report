@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List
 import pandas as pd
 from .data_loader import load_tables, combine_tables
-from .word_report import export_docx
+from .export.word_report import export_docx
 from .pdf_report import export_pdf
 
 def run_pipeline(inputs: List[str], out_dir: str = "build") -> dict:

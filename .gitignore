@@ -1,6 +1,6 @@
 .venv/
+build/
 __pycache__/
 *.pyc
-build/
-.env
-.DS_Store
+*.xlsx~*
+*.docx~*
