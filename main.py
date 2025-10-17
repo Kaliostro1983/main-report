@@ -3,9 +3,10 @@ import argparse
 import logging
 from pathlib import Path  # ⚡
 from glob import glob
-from src.reportgen.data_loader import load_inputs
-from src.reportgen.normalize_freq import normalize_frequency_column
-from src.reportgen.export_xlsx import save_df_xlsx
+from src.activefrequencies.report import build_active_frequencies_docx
+from src.armorkit.data_loader import load_inputs
+from src.armorkit.normalize_freq import normalize_frequency_column
+# from src.reportgen.export_xlsx import save_df_xlsx
 
 from src.reportgen.grouping import unique_frequencies_with_counts, group_frequencies_by_tag
 from src.reportgen.settings import load_config
@@ -33,10 +34,10 @@ def main():
     ap.add_argument("--config", default="config.yml", help="Шлях до YAML-конфіга")
     ap.add_argument(
         "--mode",
-        choices=["read", "normalize", "freq-groups", "draft-docx", "run"],
+        choices=["read", "normalize", "freq-groups", "draft-docx", "run", "active-freqs", "peleng-gui", "artyleria-report", "eralonky", "enemies"],
         default="read",
         help="read=зчитати; normalize=нормалізувати 'Частота' і зберегти XLSX; "
-             "freq-groups=вивести групи частот; draft-docx=згенерувати DOCX-чернетку; run=повний конвеєр",
+             "freq-groups=вивести групи частот; draft-docx=згенерувати DOCX-чернетку; run=повний конвеєр; active-freqs=звіт 'Активні мережі'",
     )
     ap.add_argument("--log-level", default="INFO", help="DEBUG, INFO, WARNING, ERROR")
     args = ap.parse_args()
@@ -53,13 +54,13 @@ def main():
         print("Intercepts columns:", list(li.intercepts_df.columns)[:12])
         return
 
-    if args.mode == "normalize":
-        li = load_inputs(args.config)
-        normalize_frequency_column(li.intercepts_df, li.reference_df)
-        out_path = "build/normalized_intercepts.xlsx"
-        save_df_xlsx(li.intercepts_df, out_path)
-        print(f"OK: normalized intercepts saved to {out_path}")
-        return
+    # if args.mode == "normalize":
+    #     li = load_inputs(args.config)
+    #     normalize_frequency_column(li.intercepts_df, li.reference_df)
+    #     out_path = "build/normalized_intercepts.xlsx"
+    #     save_df_xlsx(li.intercepts_df, out_path)
+    #     print(f"OK: normalized intercepts saved to {out_path}")
+    #     return
 
     if args.mode == "freq-groups":
         li = load_inputs(args.config)
@@ -84,6 +85,37 @@ def main():
     if args.mode == "run":
         print("Full pipeline will be implemented next.")
         return
+    
+    elif args.mode == "active-freqs":
+        path = build_active_frequencies_docx(args.config)
+        print(f"OK: DOCX збережено → {path}")
+        
+        
+    elif args.mode == "peleng-gui":
+        # ВАЖЛИВО: назва пакета має бути без дефіса!
+        # Тобто директорія модуля повинна називатися src/peleng_gen/, не src/peleng-gen/
+        from src.pelenggen.gui import main as peleng_gui_main
+        # Якщо GUI сам читає config.yml — достатньо просто викликати:
+        peleng_gui_main()
+        return
+    
+    elif args.mode == "artyleria-report":
+        from src.artyleria.runner import run as arty_run
+        arty_run()
+        return
+    
+    elif args.mode == "eralonky":
+        from src.etalonky.runner import run as eralonky_run
+        eralonky_run()
+        return
+    
+    elif args.mode == "enemies":
+        from src.enemies.generate_enemies_report import main as enemies_main
+        enemies_main()
+        return
+
+
+
 
 if __name__ == "__main__":
     main()

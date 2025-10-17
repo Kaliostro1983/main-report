@@ -7,8 +7,8 @@ from typing import Dict, List
 
 import pandas as pd
 
-from .settings import load_config, Config
-from .io_utils import read_excel, find_latest
+from ..reportgen.settings import load_config, Config
+from ..reportgen.io_utils import read_excel, find_latest
 
 
 

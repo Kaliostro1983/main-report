@@ -6,7 +6,7 @@ import re
 import pandas as pd
 import logging
 
-from src.reportgen.normalize_freq import FREQ_NOT_FOUND
+from src.armorkit.normalize_freq import FREQ_NOT_FOUND
 
 log = logging.getLogger(__name__)
 
