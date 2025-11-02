@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 # 1) використовуємо існуючі модулі з твого проєкту
-from src.reportgen.settings import load_config  # читаємо config.yml (freq_file, reports_dir тощо)
+from src.armorkit.settings import load_config  # читаємо config.yml (freq_file, reports_dir тощо)
 from src.armorkit.data_loader import load_reference  # читаємо довідник XLSX
 from src.armorkit.normalize_freq import (
     FREQ_NOT_FOUND,

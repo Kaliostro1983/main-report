@@ -9,7 +9,7 @@ from src.armorkit.normalize_freq import normalize_frequency_column
 # from src.reportgen.export_xlsx import save_df_xlsx
 
 from src.reportgen.grouping import unique_frequencies_with_counts, group_frequencies_by_tag
-from src.reportgen.settings import load_config
+from src.armorkit.settings import load_config
 from src.reportgen.export.word_report import build_draft_docx
 
 def parse_args():
@@ -34,7 +34,7 @@ def main():
     ap.add_argument("--config", default="config.yml", help="Шлях до YAML-конфіга")
     ap.add_argument(
         "--mode",
-        choices=["read", "normalize", "freq-groups", "draft-docx", "run", "active-freqs", "peleng-gui", "artyleria-report", "eralonky", "enemies"],
+        choices=["read", "normalize", "freq-groups", "draft-docx", "run", "active-freqs", "peleng-gui", "artyleria-report", "eralonky", "enemies", "simple-report", "still-alive", "move_enemies", "freq-lists"],
         default="read",
         help="read=зчитати; normalize=нормалізувати 'Частота' і зберегти XLSX; "
              "freq-groups=вивести групи частот; draft-docx=згенерувати DOCX-чернетку; run=повний конвеєр; active-freqs=звіт 'Активні мережі'",
@@ -113,6 +113,34 @@ def main():
         from src.enemies.generate_enemies_report import main as enemies_main
         enemies_main()
         return
+    
+    elif args.mode == "simple-report":
+        from src.simplereport.generate_simple_report import build_simple_report_docx
+        path = build_simple_report_docx(args.config)
+        print(f"OK: DOCX збережено → {path}")
+        return
+    
+    elif args.mode == "still-alive":
+        from src.stillalive.generate_stillalive_report import build_stillalive_report
+        path = build_stillalive_report(args.config)
+        print(f"[OK] StillAlive збережено: {path}")
+        
+        
+    elif args.mode == "move_enemies":
+        from src.movecallsigns.who_move import create_move_report
+        path = create_move_report(args.config)
+        print(f"OK: DOCX збережено → {path}")
+        return
+    
+    
+    elif args.mode == "freq-lists":
+        from src.freqexport.generate_lists import build_freq_lists
+        paths = build_freq_lists(args.config)
+        print("[OK] Збережено списки частот:")
+        for k, v in paths.items():
+            print(f"  {k}: {v}")
+
+
 
 
 

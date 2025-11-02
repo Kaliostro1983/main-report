@@ -35,7 +35,7 @@ from src.reportgen.grouping import (
     unique_frequencies_with_counts,
     group_frequencies_by_tag,
 )
-from src.reportgen.settings import load_config
+from src.armorkit.settings import load_config
 
 from src.armorkit.docxutils.safe_save import safe_save_docx
 
