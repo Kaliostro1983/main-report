@@ -34,7 +34,7 @@ def main():
     ap.add_argument("--config", default="config.yml", help="Шлях до YAML-конфіга")
     ap.add_argument(
         "--mode",
-        choices=["read", "normalize", "freq-groups", "draft-docx", "run", "active-freqs", "peleng-gui", "artyleria-report", "eralonky", "enemies", "simple-report", "still-alive", "move_enemies", "freq-lists"],
+        choices=["read", "normalize", "freq-groups", "draft-docx", "run", "active-freqs", "peleng-gui", "artyleria-report", "eralonky", "enemies", "simple-report", "still-alive", "move_enemies", "freq-lists", "automizer"],
         default="read",
         help="read=зчитати; normalize=нормалізувати 'Частота' і зберегти XLSX; "
              "freq-groups=вивести групи частот; draft-docx=згенерувати DOCX-чернетку; run=повний конвеєр; active-freqs=звіт 'Активні мережі'",
@@ -125,7 +125,17 @@ def main():
         path = build_stillalive_report(args.config)
         print(f"[OK] StillAlive збережено: {path}")
         
-        
+    elif args.mode == "automizer":
+        # runner може приймати config або ні — зробимо сумісно
+        # на початку файлу поруч з іншими імпортами
+        from src.automizer.runner import main as automizer_main
+
+        try:
+            automizer_main(args.config)
+        except TypeError:
+            automizer_main()
+        return
+    
     elif args.mode == "move_enemies":
         from src.movecallsigns.who_move import create_move_report
         path = create_move_report(args.config)
