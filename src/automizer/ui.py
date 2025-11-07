@@ -59,6 +59,30 @@ class AutomizerApp:
 
         # гарячі клавіші
         self._bind_hotkeys()
+    
+    
+    def _copy_intercept(self, event=None):
+        # якщо користувач зараз у полі приміток – не ліземо,
+        # нехай працює стандартне копіювання
+        if self.root.focus_get() is self.txt_notes:
+            return  # не повертаємо "break"
+
+        # тимчасово розблокували велике поле
+        self.txt_intercept.config(state="normal")
+        try:
+            try:
+                text = self.txt_intercept.get(tk.SEL_FIRST, tk.SEL_LAST)
+            except tk.TclError:
+                # нічого не виділено – копіюємо весь перехоплений текст
+                text = self.txt_intercept.get("1.0", tk.END).rstrip("\n")
+
+            self.root.clipboard_clear()
+            self.root.clipboard_append(text)
+        finally:
+            self.txt_intercept.config(state="disabled")
+
+        return "break"
+
 
     # ------------------------------
     # UI
@@ -75,6 +99,10 @@ class AutomizerApp:
         self.txt_intercept = tk.Text(left_frame, wrap="word", font=("Arial", 18))
         self.txt_intercept.configure(state="disabled")
         self.txt_intercept.pack(fill="both", expand=True, pady=(0, 10))
+        
+        # # дозволяємо копіювати з заблокованого поля
+        self.txt_intercept.bind("<Control-c>", self._copy_intercept)
+        self.txt_intercept.bind("<Control-C>", self._copy_intercept)
 
         # combobox з шаблонами
         bottom_frame = tk.Frame(left_frame)
@@ -136,6 +164,10 @@ class AutomizerApp:
         self.root.bind("<Left>", lambda e: self._on_prev())
         self.root.bind("<Right>", lambda e: self._on_next())
         self.root.bind("<Down>", lambda e: self._on_clear_clicked())
+        
+        # Ctrl+C для заблокованого поля перехоплення
+        self.root.bind_all("<Control-c>", self._copy_intercept)
+        self.root.bind_all("<Control-C>", self._copy_intercept)
 
         # гарячі клавіші з conclusions.json
         for tmpl in self.templates:

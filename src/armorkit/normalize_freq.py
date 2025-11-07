@@ -142,6 +142,7 @@ def normalize_frequency_column(intercepts_df: pd.DataFrame, ref_df: pd.DataFrame
     - якщо там маска 100/200/300 — шукаємо по Маска_3/Маска_Ш;
     - інакше — пробуємо витягнути з тексту 'р\обмін'.
     """
+    print(f"DEBUG: normalize_frequency_column started {masks_df}")
     if "Частота" not in intercepts_df.columns:
         raise KeyError("У перехопленнях відсутня колонка 'Частота'")
     
@@ -150,23 +151,27 @@ def normalize_frequency_column(intercepts_df: pd.DataFrame, ref_df: pd.DataFrame
     total = len(intercepts_df)
     for i in range(total):
         raw_freq = intercepts_df.at[i, "Частота"]
+        # print(f"DEBUG: Row {i+1}/{total}, raw_freq={raw_freq!r}")
 
         # 1. якщо це адекватна частота — нічого не робимо
-        if is_real_freq(raw_freq):
+        if is_real_freq(raw_freq) and pd.isna(raw_freq) is False:
+            # print(f"DEBUG: Row {i+1}: real freq {raw_freq!r}, пропускаємо, бо {raw_freq is pd.nan} є реальною частотою")
             continue
 
         # 2. якщо це схоже на маску 100/200/300 — шукаємо по масках
         if raw_freq is not None and str(raw_freq).strip().startswith(MASK_PREFIXES):
+            # print(f"DEBUG: Row {i+1}: шукаємо частоту по масці для рядка {i}")
             true_f = get_true_freq_by_mask(raw_freq, ref_df)
             true_f = str(true_f)
             intercepts_df.at[i, "Частота"] = true_f
             continue
 
         # 3. інакше — шукаємо по тексту перехоплення
+        # print(f"DEBUG: Шукаємо частоту по тексту для рядка {i}|{masks_df is not None}")
         text_val = intercepts_df.at[i, COL_TEXT] if COL_TEXT in intercepts_df.columns else None
         if masks_df is not None:
             # якщо є маски, то шукаємо спочатку в них
-            print(f"DEBUG: Шукаємо частоту по тексту у masks_df для рядка {i}")
+            # print(f"DEBUG: Шукаємо частоту по тексту у masks_df для рядка {i}")
             true_f = get_true_freq_by_text(text_val, masks_df)
         else:
             true_f = get_true_freq_by_text(text_val, ref_df)

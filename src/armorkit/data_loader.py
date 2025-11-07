@@ -52,7 +52,7 @@ def load_masks(freq_path: str | Path) -> Optional[pd.DataFrame]:
             path,
             sheet_name="masks",
             engine="openpyxl",
-            dtype={"Частота": "object", "Маска": "object"},  # ← важливо
+            dtype={"Частота": "object", "Маска_А": "object"},  # ← важливо
         )
     except Exception as ex:
         print(f"DEBUG: load_masks FAILED: {ex}")
@@ -63,18 +63,19 @@ def load_masks(freq_path: str | Path) -> Optional[pd.DataFrame]:
         return None
 
     # Перший великий трейс
-    print(f"DEBUG: load_masks -> shape={df.shape}")
-    print(f"DEBUG: load_masks -> columns={list(df.columns)}")
+    # print(f"DEBUG: load_masks -> shape={df.shape}")
+    # print(f"DEBUG: load_masks -> columns={list(df.columns)}")
 
     # ПОКАЗАТИ всі рядки, які він реально прочитав
-    for idx, row in df.iterrows():
-        print(f"DEBUG: masks[{idx}] = Ч:{repr(row.get('Частота'))} | М:{repr(row.get('Маска'))}")
+    # for idx, row in df.iterrows():
+    #     print(f"DEBUG: masks[{idx}] = Ч:{repr(row.get('Частота'))} | М:{repr(row.get('Маска_А'))}")
 
     # маленький захист — тільки якщо реально є колонка "Маска"
-    if "Маска" not in df.columns or "Частота" not in df.columns:
+    if "Маска_А" not in df.columns or "Частота" not in df.columns:
         print("DEBUG: load_masks -> required columns not found")
         return None
 
+    # print(f"DEBUG: load_masks -> loaded {len(df)} rows")
     return df
 
 
@@ -117,6 +118,7 @@ def load_inputs(config_path: str = "config.yml") -> LoadedInputs:
         report_path=str(latest_report),
         reference_df=reference_df,
         intercepts_df=intercepts_df,
+        masks_df=masks_df
     )
 
 
