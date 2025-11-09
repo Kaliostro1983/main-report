@@ -165,7 +165,7 @@ def build_stillalive_report(config_path: str) -> Path:
     li = load_inputs(config_path)
 
     period_start, period_end = parse_period_from_filename(li.report_path)
-    normalize_frequency_column(li.intercepts_df, li.reference_df)
+    normalize_frequency_column(li.intercepts_df, li.reference_df, li.masks_df)
 
     observed_freqs_df = _get_observed_frequencies(li.reference_df)
     summary_df = _prepare_daily_counts(li.intercepts_df, observed_freqs_df)

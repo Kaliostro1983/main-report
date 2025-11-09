@@ -65,7 +65,7 @@ def main():
     if args.mode == "freq-groups":
         li = load_inputs(args.config)
         cfg = load_config(args.config)
-        normalize_frequency_column(li.intercepts_df, li.reference_df)
+        normalize_frequency_column(li.intercepts_df, li.reference_df, li.masks_df)
         freqs, counts = unique_frequencies_with_counts(li.intercepts_df)
         allowed = (cfg.grouping or {}).get("allowed_tags", [])
         other   = (cfg.grouping or {}).get("other_bucket", "Інші радіомережі")

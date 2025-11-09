@@ -219,7 +219,7 @@ def build_simple_report_docx(config_path: str) -> Path:
     cfg = load_config(config_path)
     li = load_inputs(config_path)
 
-    print(f"DEBUG: Generating simple report docx with {li.masks_df} intercepts")
+    # print(f"DEBUG: Generating simple report docx with {li.masks_df} intercepts")
     # 2. Нормалізувати частоти:
     normalize_frequency_column(li.intercepts_df, li.reference_df, li.masks_df)
 

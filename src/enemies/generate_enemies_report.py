@@ -269,7 +269,7 @@ def main():
     tokens = read_freq_tokens(freq_file)
     freq4_list = tokens_to_freq4(tokens, reference_df)
 
-    normalize_frequency_column(intercepts_df, reference_df)
+    normalize_frequency_column(intercepts_df, reference_df, li.masks_df)
 
     rows, items = [], []
     for f4 in freq4_list:

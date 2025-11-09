@@ -21,7 +21,7 @@ def main(config_path: str = "config.yml") -> None:
     li = load_inputs(config_path)
 
     # 2. нормалізували частоти (вже готова функція)
-    normalize_frequency_column(li.intercepts_df, li.reference_df)
+    normalize_frequency_column(li.intercepts_df, li.reference_df, li.masks_df)
 
     # 3. запустили інтерфейс
     app = AutomizerApp(

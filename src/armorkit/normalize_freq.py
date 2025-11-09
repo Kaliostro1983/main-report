@@ -65,6 +65,8 @@ def get_true_freq_by_mask(mask_like, ref_df: pd.DataFrame) -> str:
         return FREQ_NOT_FOUND
 
     tmp = ref_df.copy()
+    # print(f"DEBUG: get_true_freq_by_mask -> shape={tmp.shape}")
+    print
     # нормалізуємо числові колонки до 3 знаків
     for col in ("Маска_3", "Маска_Ш"):
         if col in tmp.columns:
@@ -135,7 +137,7 @@ def get_true_freq_by_text(text, ref_df: pd.DataFrame) -> str:
     return str(freq_val).strip()
 
 
-def normalize_frequency_column(intercepts_df: pd.DataFrame, ref_df: pd.DataFrame, masks_df: pd.DataFrame = None) -> pd.DataFrame:
+def normalize_frequency_column(intercepts_df: pd.DataFrame, ref_df: pd.DataFrame, masks_df: pd.DataFrame) -> pd.DataFrame:
     """
     Те, що в тебе крутилося у word_report.py:
     - якщо в 'Частота' вже нормальна частота — лишаємо;
@@ -169,12 +171,12 @@ def normalize_frequency_column(intercepts_df: pd.DataFrame, ref_df: pd.DataFrame
         # 3. інакше — шукаємо по тексту перехоплення
         # print(f"DEBUG: Шукаємо частоту по тексту для рядка {i}|{masks_df is not None}")
         text_val = intercepts_df.at[i, COL_TEXT] if COL_TEXT in intercepts_df.columns else None
-        if masks_df is not None:
+        # if masks_df is not None:
             # якщо є маски, то шукаємо спочатку в них
-            # print(f"DEBUG: Шукаємо частоту по тексту у masks_df для рядка {i}")
-            true_f = get_true_freq_by_text(text_val, masks_df)
-        else:
-            true_f = get_true_freq_by_text(text_val, ref_df)
+        # print(f"DEBUG: Шукаємо частоту по тексту у masks_df для рядка {i}")
+        true_f = get_true_freq_by_text(text_val, masks_df)
+        # else:
+        #     true_f = get_true_freq_by_text(text_val, ref_df)
         
         true_f = str(true_f)
         intercepts_df.at[i, "Частота"] = true_f

@@ -89,7 +89,7 @@ def _render_overview_page(doc: Document, cfg, li, groups, counts, period_start, 
     add_title(doc, f"станом на {period_end.split(' ')[0]}")
 
     psub = doc.add_paragraph("за результатами ведення радіоелектронної розвідки\n"
-                             "у зоні відповідальності тактичної групи “Кремінна”")
+                             "у зоні відповідальності 3 АК")
     psub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     for r in psub.runs:
         r.bold = True; r.font.size = Pt(12)
@@ -195,7 +195,7 @@ def build_active_frequencies_docx(config_path: str = "config.yml") -> str:
     li = load_inputs(config_path)
 
     # нормалізуємо «Частота» в перехопленнях
-    normalize_frequency_column(li.intercepts_df, li.reference_df)
+    normalize_frequency_column(li.intercepts_df, li.reference_df, li.masks_df)
 
     # групи та лічильники
     freqs, counts = unique_frequencies_with_counts(li.intercepts_df)

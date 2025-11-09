@@ -101,7 +101,7 @@ def create_move_report(config_path: str = "config.yml") -> str:
     li = load_inputs(config_path)
 
     # нормалізуємо «Частота» в перехопленнях
-    normalize_frequency_column(li.intercepts_df, li.reference_df)
+    normalize_frequency_column(li.intercepts_df, li.reference_df, li.masks_df)
 
     # групи та лічильники
     freqs, counts = unique_frequencies_with_counts(li.intercepts_df)

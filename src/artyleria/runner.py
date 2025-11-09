@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 # 1) вхідні дані беремо з armorkit (єдиний шар)
+from src.armorkit.config import load_config
 from src.armorkit.data_loader import load_inputs
 # 2) нормалізація частоти — та сама, що у попередніх звітах
 from src.armorkit.normalize_freq import normalize_frequency_column
@@ -44,8 +45,11 @@ def _next_free(path: Path) -> Path:
         i += 1
 
 
-def run() -> Path:
+def run(config_path: str = "config.yml") -> Path:
     # ---- 1) Завантаження (довідник + свіжа вибірка перехоплень) ----
+    cfg = load_config(config_path)
+    li = load_inputs(config_path)
+    
     loaded = load_inputs("config.yml")
     ref_df: pd.DataFrame = getattr(loaded, "reference_df")
     inter_df: pd.DataFrame = (
@@ -55,7 +59,7 @@ def run() -> Path:
     )
 
     # ---- 2) Нормалізація частот у перехопленнях ----
-    inter_df = normalize_frequency_column(inter_df, ref_df)
+    inter_df = normalize_frequency_column(inter_df, ref_df, li.masks_df)
 
     # ---- 3) Перелік артмереж із довідника ----
     need_cols = {"Частота", "Теги"}
