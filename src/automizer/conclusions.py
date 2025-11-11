@@ -3,120 +3,224 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-import json
-from typing import List, Optional, Any
+from typing import Any, Optional, Tuple
 
+import json
+import logging
 import pandas as pd
 
-import logging
+from src.automizer.freqdict import lookup_place_unit, COL_FREQ
 
 logger = logging.getLogger(__name__)
 
-COL_PLACE = "Зона функціонування"
-COL_UNIT = "Хто"
-COL_FREQ = "Частота"
+# --------- Статуси висновків ---------
+STATUS_EMPTY: str = "empty"
+STATUS_NEED_APPROVE: str = "need_approve"
+STATUS_APPROVED: str = "approved"
+
+# --------- Колонки службові ---------
+COL_STATUS = "__status"
+COL_NOTES = "примітки"
+COL_MATCHED_TEMPLATE = "__matched_template"
+COL_MATCHED_WORD = "__matched_word"
+COL_MULTI_MATCH = "__multi_match"
+
+TEXT_COL = "р\\обмін"
+
+
+@dataclass
+class KeywordRule:
+    word: str
+    probability: int  # 0 або 1
 
 
 @dataclass
 class ConclusionTemplate:
     name: str
     description: str
-    keywords: list[str]
-    shortcut: str  # у файлі поле назване "shorcut", обробимо нижче
+    keywords: list[KeywordRule]
+    shortcut: str = ""
 
 
-def load_conclusions(path: Path | str) -> list[ConclusionTemplate]:
-    p = Path(path)
+def _norm_text(s: Any) -> str:
+    return str(s).strip().lower()
+
+
+def _render_with_place_unit(description: str, freq_value: Any, reference_df: pd.DataFrame) -> str:
+    place, unit = lookup_place_unit(freq_value, reference_df)
+    return description.replace("{PLACE}", place).replace("{UNIT}", unit)
+
+
+def load_conclusions(conclusions_path: str | Path) -> list[ConclusionTemplate]:
+    """
+    Підтримує новий формат:
+      {"keywords": [{"word":"...", "probability":0|1}, ...]}
+    і зворотну сумісність:
+      {"keywords": ["рядок1", "рядок2", ...]} -> probability=0
+    """
+    p = Path(conclusions_path)
     if not p.exists():
         raise FileNotFoundError(f"conclusions.json not found: {p}")
 
     raw = json.loads(p.read_text(encoding="utf-8"))
     items = raw.get("conclusions", [])
     result: list[ConclusionTemplate] = []
+
     for item in items:
-        shortcut = item.get("shortcut") or item.get("shorcut") or ""
-        tmpl = ConclusionTemplate(
-            name=item.get("name", "").strip(),
-            description=item.get("description", "").strip(),
-            keywords=[k.strip() for k in item.get("keywords", [])],
-            shortcut=str(shortcut).strip(),
+        shortcut = str(item.get("shortcut") or item.get("shorcut") or "").strip()
+        description = str(item.get("description", "")).strip()
+        name = str(item.get("name", "")).strip()
+
+        kw_list: list[KeywordRule] = []
+        raw_kws = item.get("keywords", [])
+        for k in raw_kws:
+            if isinstance(k, dict):
+                word = str(k.get("word", "")).strip()
+                prob = int(k.get("probability", 0))
+            else:
+                # зворотна сумісність для старих JSON
+                word = str(k).strip()
+                prob = 0
+            if not word:
+                continue
+            prob = 1 if prob == 1 else 0
+            kw_list.append(KeywordRule(word=word, probability=prob))
+
+        result.append(
+            ConclusionTemplate(
+                name=name,
+                description=description,
+                keywords=kw_list,
+                shortcut=shortcut,
+            )
         )
-        result.append(tmpl)
     return result
 
 
-def _norm_text(s: str) -> str:
-    return (
-        s.lower()
-        .replace("ї", "і")
-        .replace(",", " ")
-        .replace(".", " ")
-        .replace("!", " ")
-        .replace("?", " ")
-    )
+# conclusions.py
+import re
 
+def _prefix_regex(word: str) -> re.Pattern:
+    # Префіксний збіг на початку слова; для дуже коротких префіксів вимагаємо повний збіг
+    w_raw = (word or "").strip().lower().replace("ё", "е")
+    w = re.escape(w_raw)
+    if len(w_raw) < 3:
+        pattern = rf"\b{w}\b"
+    else:
+        pattern = rf"\b{w}[\w\-]*"
+    return re.compile(pattern, flags=re.IGNORECASE | re.UNICODE)
 
-def _find_place_unit_by_freq(freq_value: Any, reference_df: pd.DataFrame) -> tuple[str, str]:
+def find_template_candidates(text: str, templates: list[ConclusionTemplate]):
     """
-    Пошук по reference_df (аркуш "freq") за значенням колонки "Частота".
-    Якщо не знайшли — повертаємо "невизначено".
+    Повертає список [(tmpl, rule), ...] у тому ж порядку, як у JSON.
+    На відміну від старої версії, НЕ зупиняється на першому збігу в межах шаблону:
+    якщо у шаблона спрацювало кілька слів-тригерів, додаємо їх усі.
     """
-    if freq_value is None:
-        return "невизначено", "невизначено"
-
-    # df у тебе сирий з екселя: там може бути і float, і str
-    target = str(freq_value).strip()
-    if not target:
-        return "невизначено", "невизначено"
-
-    # приводимо обидві сторони до str
-    tmp = reference_df
-    if COL_FREQ in tmp.columns:
-        mask = tmp[COL_FREQ].astype(str).str.strip() == target
-        matches = tmp[mask]
-        if len(matches) > 0:
-            row = matches.iloc[0]
-            place = str(row.get(COL_PLACE, "")).strip() or "невизначено"
-            unit = str(row.get(COL_UNIT, "")).strip() or "невизначено"
-            return place, unit
-
-    return "невизначено", "невизначено"
+    text_norm = (text or "")
+    matches = []
+    for tmpl in templates:
+        for rule in tmpl.keywords:  # rule має поля .word, .probability
+            pat = _prefix_regex(rule.word)
+            if pat.search(text_norm):
+                matches.append((tmpl, rule))
+                # ВАЖЛИВО: без break — збираємо всі спрацьовані слова одного шаблону
+    return matches
 
 
-def render_template(
-    tmpl: ConclusionTemplate,
-    freq_value: Any,
-    reference_df: pd.DataFrame,
-) -> str:
-    place, unit = _find_place_unit_by_freq(freq_value, reference_df)
-    text = tmpl.description.replace("{PLACE}", place).replace("{UNIT}", unit)
-    return text
 
 
-def try_autopick_conclusion(
-    intercept_text: str,
-    freq_value: Any,
+def decide_status_by_candidates(candidates: list[tuple[ConclusionTemplate, KeywordRule]]) -> str:
+    """
+    Правила:
+      - 0 збігів -> empty
+      - 1 збіг:
+           probability==1 -> approved
+           probability==0 -> need_approve
+      - >1 збігів -> need_approve (беремо перший за порядком)
+    """
+    if len(candidates) == 0:
+        return STATUS_EMPTY
+    if len(candidates) == 1:
+        _, rule = candidates[0]
+        return STATUS_APPROVED if rule.probability == 1 else STATUS_NEED_APPROVE
+    return STATUS_NEED_APPROVE
+
+
+def autopick_for_row(
+    row: pd.Series,
     reference_df: pd.DataFrame,
     templates: list[ConclusionTemplate],
-) -> Optional[str]:
+) -> tuple[str, str, str, bool, str]:
     """
-    Проходимося по шаблонах і при першому збігу keywords у тексті повертаємо сформований висновок.
-    """
-    if not intercept_text:
-        return None
+    Повертає кортеж:
+    (status, matched_template, matched_word, multi_match, notes_text)
 
-    norm_intercept = _norm_text(intercept_text)
-    for tmpl in templates:
-        for kw in tmpl.keywords:
-            if not kw:
-                continue
-            if _norm_text(kw) in norm_intercept:
-                # ЛОГУЄМО ЗНАЙДЕНИЙ ЗБІГ
-                logger.info(
-                    'в повідомлення "%s" знайдено слово "%s" висновку "%s"',
-                    intercept_text,
-                    kw,
-                    tmpl.name,
-                )
-                return render_template(tmpl, freq_value, reference_df)
-    return None
+    notes_text формуємо одразу за першим кандидатом (якщо він є).
+    """
+    text = str(row.get(TEXT_COL, "") or "")
+    freq_val = row.get(COL_FREQ)
+
+    candidates = find_template_candidates(text, templates)
+    status = decide_status_by_candidates(candidates)
+
+    matched_template = ""
+    matched_word = ""
+    multi = len(candidates) > 1
+    notes = ""
+
+    if len(candidates) > 0:
+        tmpl, rule = candidates[0]
+        matched_template = tmpl.name
+        matched_word = rule.word
+        notes = _render_with_place_unit(tmpl.description, freq_val, reference_df)
+
+    return status, matched_template, matched_word, multi, notes
+
+
+def ensure_df_service_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Гарантуємо наявність службових колонок."""
+    if COL_STATUS not in df.columns:
+        df[COL_STATUS] = STATUS_EMPTY
+    if COL_NOTES not in df.columns:
+        df[COL_NOTES] = ""
+    if COL_MATCHED_TEMPLATE not in df.columns:
+        df[COL_MATCHED_TEMPLATE] = ""
+    if COL_MATCHED_WORD not in df.columns:
+        df[COL_MATCHED_WORD] = ""
+    if COL_MULTI_MATCH not in df.columns:
+        df[COL_MULTI_MATCH] = False
+    return df
+
+
+def apply_autopick_to_df(
+    df: pd.DataFrame,
+    reference_df: pd.DataFrame,
+    templates: list[ConclusionTemplate],
+    *,
+    skip_approved: bool = True,
+) -> pd.DataFrame:
+    """
+    Виконує автопідбір для всього датафрейму.
+    Якщо skip_approved=True — рядки зі статусом 'approved' не перераховуються.
+    """
+    df = ensure_df_service_columns(df)
+
+    for idx, row in df.iterrows():
+        if skip_approved and df.at[idx, COL_STATUS] == STATUS_APPROVED:
+            continue
+
+        status, m_tmpl, m_word, multi, notes = autopick_for_row(row, reference_df, templates)
+
+        df.at[idx, COL_STATUS] = status
+        df.at[idx, COL_MATCHED_TEMPLATE] = m_tmpl
+        df.at[idx, COL_MATCHED_WORD] = m_word
+        df.at[idx, COL_MULTI_MATCH] = multi
+
+        if status != STATUS_EMPTY:
+            df.at[idx, COL_NOTES] = notes
+        else:
+            df.at[idx, COL_NOTES] = df.at[idx, COL_NOTES] or ""
+
+        # logger.info('row=%s status=%s tmpl="%s" word="%s" multi=%s', idx, status, m_tmpl, m_word, multi)
+
+    return df

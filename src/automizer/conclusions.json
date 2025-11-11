@@ -1,37 +1,609 @@
-{"conclusions":[
+{
+  "conclusions": [
     {
-        "name": "переміщення",
-        "description": "В р-н н.п. {PLACE} виявлено переміщення ворожого підрозділу зі складу {UNIT}",
-        "keywords": ["отправля", "встречай", "выводи", "пойдем", "идите", "повел", "встрет", "старту", "толка", 
-        "двинулись", "потихоньку", "выдвига", "подходим", "под ноги", "ведет", "правее", "левее", "движен", "проходим", 
-        "подошли", "двигай", "выйдите", "заходим", "подходим", "шустре", "на тропу", "откатывайтесь", "направо поверни", 
-        "откатываемся", "пошли дальше", "идем", "перебе", "ускоряй", "не останавливай", "бегом", "поворачива", "прошел", 
-        "прошли", "пройти", "пройдем", "бегу", "бежим", "бежать", "бежит", "идеш", "спускаемся", "выходим", "выходят",
-        "выхожу", "добрались", "доберетесь", "отправляй", "выдвига", "прорваться", "перебега", "иду", "идем", "пошли",
-        "двигаться", "в дороге", "вдороге", "перескочили", "бежали", "перейти", "проходим", "рывок", "движемся", "в движении",
-        "пересека", "выкаты", "дошел до ", "дошли до", "быстрее", "стартанул", "выдвинул", "бежал", "забегал"],
-        "shortcut": "1"
+      "name": "артилерія",
+      "description": "В р-н н.п. {PLACE} виявлено планування ураження позицій СОУ артилерійським вогнем ворожого розрахунку зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "одну по готовности",
+          "probability": 1
+        },
+        {
+          "word": "направление",
+          "probability": 0
+        },
+        {
+          "word": "корректировку",
+          "probability": 1
+        },
+        {
+          "word": "выстрел, да",
+          "probability": 1
+        },
+        {
+          "word": "записывай",
+          "probability": 1
+        },
+        {
+          "word": "размешивай одну",
+          "probability": 1
+        },
+        {
+          "word": "дежурная цель",
+          "probability": 1
+        },
+        {
+          "word": "мину огонь",
+          "probability": 1
+        },
+        {
+          "word": "одну мину",
+          "probability": 1
+        },
+        {
+          "word": "навестись",
+          "probability": 1
+        },
+        {
+          "word": "наведен",
+          "probability": 1
+        },
+        {
+          "word": "одну огонь",
+          "probability": 1
+        },
+        {
+          "word": "восстановить наводку",
+          "probability": 1
+        }
+      ],
+      "shortcut": "2"
     },
     {
-        "name": "підготовка переміщення",
-        "description": "В р-н н.п. {PLACE} виявлено підготовку переміщення ворожого підрозділу зі складу {UNIT}",
-        "keywords": ["ждем команды", "ждите команды", "готов"],
-        "shortcut": "4"
+      "name": "переміщння техніки",
+      "description": "В р-н н.п. {PLACE} виявлено переміщення техніки СОУ в зоні функціонування ворожого розрахунку зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "звук техники",
+          "probability": 1
+        }
+      ],
+      "shortcut": "7"
     },
     {
-        "name": "артилерія",
-        "description": "В р-н н.п. {PLACE} виявлено корегування вогню ворожого розрахунку зі складу {UNIT}",
-        "keywords": ["одну по готовности", "записывай", "размешивай одну", "дежурная цель", "навестись", "наведен", 
-        "одну огонь", "восстановить наводку"],
-        "shortcut": "2"
+      "name": "СОУ переміщення",
+      "description": "В р-н н.п. {PLACE} виявлено переміщення бійців СОУ в зоні функціонування ворожого розрахунку зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "пидар",
+          "probability": 0
+        }
+      ],
+      "shortcut": "6"
     },
     {
-        "name": "ураження",
-        "description": "В р-н н.п. {PLACE} виявлено ураження ворожого підрозділу зі складу {UNIT}",
-        "keywords": ["ранен", "оторвало", "сквозное", "убит", "погиб", "разорва", "подбит", "взорван", 
-        "взорвание", "разнес", "уничтож", "сгорел", "сгорела", "сгорело", "оторв",
-        "сгорели", "двухсот", "трехсот", "осколок", "на мину", "пятк"],
-        "shortcut": "3"
+      "name": "ворожі БпЛА",
+      "description": "В р-н н.п. {PLACE} виявлено переміщення врожих ударних БпЛА в зоні функціонування {UNIT}",
+      "keywords": [
+        {
+          "word": "геран",
+          "probability": 1
+        },
+        {
+          "word": "ударник",
+          "probability": 1
+        }
+      ],
+      "shortcut": "9"
+    },
+    {
+      "name": "РЕБ",
+      "description": "В р-н н.п. {PLACE} виявлено застосування РЕБ ворожого розрахунку зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "баня ",
+          "probability": 1
+        },
+        {
+          "word": "баню ",
+          "probability": 1
+        },
+        {
+          "word": "коридор",
+          "probability": 1
+        }
+      ],
+      "shortcut": "5"
+    },
+    {
+      "name": "ураження",
+      "description": "В р-н н.п. {PLACE} виявлено ураження ворожого підрозділу зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "ранен",
+          "probability": 1
+        },
+        {
+          "word": "помощь",
+          "probability": 0
+        },
+        {
+          "word": "евакуация",
+          "probability": 1
+        },
+        {
+          "word": "оказ",
+          "probability": 0
+        },
+        {
+          "word": "оторвало",
+          "probability": 1
+        },
+        {
+          "word": "сквозное",
+          "probability": 1
+        },
+        {
+          "word": "убит",
+          "probability": 1
+        },
+        {
+          "word": "погиб",
+          "probability": 1
+        },
+        {
+          "word": "перелом",
+          "probability": 1
+        },
+        {
+          "word": "разорва",
+          "probability": 1
+        },
+        {
+          "word": "подбит",
+          "probability": 1
+        },
+        {
+          "word": "взорван",
+          "probability": 1
+        },
+        {
+          "word": "взорвание",
+          "probability": 1
+        },
+        {
+          "word": "разнес",
+          "probability": 1
+        },
+        {
+          "word": "уничтож",
+          "probability": 1
+        },
+        {
+          "word": "сгорел",
+          "probability": 1
+        },
+        {
+          "word": "сгорела",
+          "probability": 1
+        },
+        {
+          "word": "сгорело",
+          "probability": 1
+        },
+        {
+          "word": "оторв",
+          "probability": 1
+        },
+        {
+          "word": "сгорели",
+          "probability": 1
+        },
+        {
+          "word": "двухсот",
+          "probability": 1
+        },
+        {
+          "word": "трехсот",
+          "probability": 1
+        },
+        {
+          "word": "осколок",
+          "probability": 1
+        },
+        {
+          "word": "на мину",
+          "probability": 1
+        },
+        {
+          "word": "контуз",
+          "probability": 1
+        },
+        {
+          "word": "подоровал",
+          "probability": 1
+        },
+        {
+          "word": "пятк",
+          "probability": 1
+        }
+      ],
+      "shortcut": "3"
+    },
+    {
+      "name": "переміщення",
+      "description": "В р-н н.п. {PLACE} виявлено переміщення ворожого підрозділу зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "отправля",
+          "probability": 1
+        },
+        {
+          "word": "подошел",
+          "probability": 1
+        },
+        {
+          "word": "подошли",
+          "probability": 1
+        },
+        {
+          "word": "дошел",
+          "probability": 1
+        },
+        {
+          "word": "дошли",
+          "probability": 1
+        },
+        {
+          "word": "пойд",
+          "probability": 1
+        },
+        {
+          "word": "маршрут",
+          "probability": 1
+        },
+        {
+          "word": "подойд",
+          "probability": 1
+        },
+        {
+          "word": "выдвинул",
+          "probability": 1
+        },
+        {
+          "word": "неси",
+          "probability": 1
+        },
+        {
+          "word": "встречай",
+          "probability": 1
+        },
+        {
+          "word": "выводи",
+          "probability": 1
+        },
+        {
+          "word": "пойдем",
+          "probability": 1
+        },
+        {
+          "word": "идите",
+          "probability": 1
+        },
+        {
+          "word": "на подходен",
+          "probability": 1
+        },
+        {
+          "word": "встрет",
+          "probability": 1
+        },
+        {
+          "word": "старту",
+          "probability": 1
+        },
+        {
+          "word": "толка",
+          "probability": 1
+        },
+        {
+          "word": "двинулись",
+          "probability": 1
+        },
+        {
+          "word": "потихоньку",
+          "probability": 1
+        },
+        {
+          "word": "выдвига",
+          "probability": 1
+        },
+        {
+          "word": "подходим",
+          "probability": 1
+        },
+        {
+          "word": "под ноги",
+          "probability": 1
+        },
+        {
+          "word": "ведет",
+          "probability": 1
+        },
+        {
+          "word": "правее",
+          "probability": 1
+        },
+        {
+          "word": "левее",
+          "probability": 1
+        },
+        {
+          "word": "движен",
+          "probability": 1
+        },
+        {
+          "word": "проходим",
+          "probability": 1
+        },
+        {
+          "word": "подошли",
+          "probability": 1
+        },
+        {
+          "word": "двига",
+          "probability": 1
+        },
+        {
+          "word": "выйдите",
+          "probability": 1
+        },
+        {
+          "word": "заходим",
+          "probability": 1
+        },
+        {
+          "word": "подходим",
+          "probability": 1
+        },
+        {
+          "word": "шустре",
+          "probability": 1
+        },
+        {
+          "word": "на тропу",
+          "probability": 1
+        },
+        {
+          "word": "откатывайтесь",
+          "probability": 1
+        },
+        {
+          "word": "направо поверни",
+          "probability": 1
+        },
+        {
+          "word": "откатываемся",
+          "probability": 1
+        },
+        {
+          "word": "пошли дальше",
+          "probability": 1
+        },
+        {
+          "word": "идем",
+          "probability": 1
+        },
+        {
+          "word": "перебе",
+          "probability": 1
+        },
+        {
+          "word": "ускоряй",
+          "probability": 1
+        },
+        {
+          "word": "не останавливай",
+          "probability": 1
+        },
+        {
+          "word": "бегом",
+          "probability": 1
+        },
+        {
+          "word": "поворачива",
+          "probability": 1
+        },
+        {
+          "word": "прошел",
+          "probability": 1
+        },
+        {
+          "word": "прошли",
+          "probability": 1
+        },
+        {
+          "word": "пройти",
+          "probability": 1
+        },
+        {
+          "word": "пройдем",
+          "probability": 1
+        },
+        {
+          "word": "бегу",
+          "probability": 1
+        },
+        {
+          "word": "бежим",
+          "probability": 1
+        },
+        {
+          "word": "бежать",
+          "probability": 1
+        },
+        {
+          "word": "бежит",
+          "probability": 1
+        },
+        {
+          "word": "идеш",
+          "probability": 1
+        },
+        {
+          "word": "спускаемся",
+          "probability": 1
+        },
+        {
+          "word": "выходим",
+          "probability": 1
+        },
+        {
+          "word": "выходят",
+          "probability": 1
+        },
+        {
+          "word": "выхожу",
+          "probability": 1
+        },
+        {
+          "word": "добрались",
+          "probability": 1
+        },
+        {
+          "word": "доберетесь",
+          "probability": 1
+        },
+        {
+          "word": "отправляй",
+          "probability": 1
+        },
+        {
+          "word": "выдвига",
+          "probability": 1
+        },
+        {
+          "word": "прорваться",
+          "probability": 1
+        },
+        {
+          "word": "перебега",
+          "probability": 1
+        },
+        {
+          "word": "иду",
+          "probability": 1
+        },
+        {
+          "word": "идем",
+          "probability": 1
+        },
+        {
+          "word": "пошли",
+          "probability": 1
+        },
+        {
+          "word": "двигаться",
+          "probability": 1
+        },
+        {
+          "word": "в дороге",
+          "probability": 1
+        },
+        {
+          "word": "вдороге",
+          "probability": 1
+        },
+        {
+          "word": "перескочили",
+          "probability": 1
+        },
+        {
+          "word": "бежали",
+          "probability": 1
+        },
+        {
+          "word": "перейти",
+          "probability": 1
+        },
+        {
+          "word": "проходим",
+          "probability": 1
+        },
+        {
+          "word": "рывок",
+          "probability": 1
+        },
+        {
+          "word": "движемся",
+          "probability": 1
+        },
+        {
+          "word": "в движении",
+          "probability": 1
+        },
+        {
+          "word": "пересека",
+          "probability": 1
+        },
+        {
+          "word": "выкаты",
+          "probability": 1
+        },
+        {
+          "word": "дошел до",
+          "probability": 1
+        },
+        {
+          "word": "дошли до",
+          "probability": 1
+        },
+        {
+          "word": "быстрее",
+          "probability": 1
+        },
+        {
+          "word": "стартанул",
+          "probability": 1
+        },
+        {
+          "word": "выдвинул",
+          "probability": 1
+        },
+        {
+          "word": "бежал",
+          "probability": 1
+        },
+        {
+          "word": "забегал",
+          "probability": 1
+        }
+      ],
+      "shortcut": "1"
+    },
+    {
+      "name": "підготовка переміщення",
+      "description": "В р-н н.п. {PLACE} виявлено приведення в бойову готовність ворожого підрозділу зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "ждем команды",
+          "probability": 1
+        },
+        {
+          "word": "ждите команды",
+          "probability": 1
+        },
+        {
+          "word": "готовн",
+          "probability": 1
+        },
+        {
+          "word": "готовимся",
+          "probability": 0
+        }
+      ],
+      "shortcut": "4"
     }
-
-]}
+    
+  ]
+}
