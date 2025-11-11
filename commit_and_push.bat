@@ -1,43 +1,58 @@
 @echo off
-REM commit_and_push.bat — Stage, commit (with timestamp), and push to current branch.
-setlocal enabledelayedexpansion
+REM commit_and_push.bat (simple, stable). Assumes the .bat is in the REPO ROOT.
+setlocal ENABLEDELAYEDEXPANSION
 
-REM Move to the directory where this script lives (assumed repo root or inside it)
+REM Go to this script's folder (repo root)
 pushd "%~dp0"
 
-REM Ensure Git is available
-git --version >NUL 2>&1 || (echo [ERROR] Git is not installed or not in PATH.& goto :end)
+REM Timestamp for logs and commit message (uses PowerShell only to format time string)
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH-mm-ss"') do set "STAMP=%%i"
 
-REM Stage all changes (including deletions)
-git add -A
+REM Prepare log file
+set "LOGDIR=%CD%\logs"
+if not exist "%LOGDIR%" mkdir "%LOGDIR%"
+set "LOG=%LOGDIR%\%STAMP%_commit_and_push.log"
 
-REM If nothing staged, skip commit
-git diff --cached --quiet && (
-  echo [INFO] Nothing to commit. Will attempt to push latest.
-  goto push_only
+REM Basic context
+for /f "delims=" %%b in ('git rev-parse --abbrev-ref HEAD') do set "BRANCH=%%b"
+for /f "delims=" %%r in ('git remote get-url origin 2^>NUL') do set "REMOTE=%%r"
+for /f "delims=" %%h in ('git rev-parse HEAD') do set "OLD=%%h"
+
+echo Repo:   %CD%
+echo Remote: %REMOTE%
+echo Branch: %BRANCH%
+echo HEAD(before): %OLD%
+
+echo Repo:   %CD%>>"%LOG%"
+echo Remote: %REMOTE%>>"%LOG%"
+echo Branch: %BRANCH%>>"%LOG%"
+echo HEAD(before): %OLD%>>"%LOG%"
+
+REM Stage and commit with auto message
+set "MSG=Auto commit %STAMP%"
+git add -A>>"%LOG%" 2>&1
+git diff --cached --quiet
+if %ERRORLEVEL% NEQ 0 (
+  git commit -m "%MSG%">>"%LOG%" 2>&1
+) else (
+  echo No changes to commit.>>"%LOG%"
+  echo No changes to commit.
 )
 
-REM Build robust timestamp via PowerShell (independent of system locale)
-for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH-mm-ss"') do set TS=%%i
+REM Rebase-pull and push
+git pull --rebase --autostash>>"%LOG%" 2>&1
+git push>>"%LOG%" 2>&1
 
-REM Commit message: use args if provided; otherwise default
-set MSG=%*
-if "%MSG%"=="" set MSG=Auto commit %TS%
+for /f "delims=" %%h in ('git rev-parse HEAD') do set "NEW=%%h"
 
-echo [INFO] Committing: %MSG%
-git commit -m "%MSG%"
-
-:push_only
-REM Detect current branch
-for /f "tokens=*" %%b in ('git rev-parse --abbrev-ref HEAD') do set BRANCH=%%b
-
-echo [INFO] Pushing to origin/!BRANCH! ...
-git push origin !BRANCH!
-
-echo.
-echo [INFO] Recent commits on !BRANCH!:
+echo HEAD(after): %NEW%
 git --no-pager log --oneline -n 5 --decorate --graph
 
-:end
+echo HEAD(after): %NEW%>>"%LOG%"
+git --no-pager log --oneline -n 5 --decorate --graph>>"%LOG%"
+
+echo Log: "%LOG%"
+echo.
+pause
 popd
 endlocal
