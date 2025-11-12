@@ -53,11 +53,20 @@
           "probability": 1
         },
         {
+          "word": "угломер",
+          "probability": 1
+        },
+        {
+          "word": "заряд",
+          "probability": 1
+        },
+        {
           "word": "восстановить наводку",
           "probability": 1
         }
       ],
-      "shortcut": "2"
+      "shortcut": "2",
+      "enabled": true
     },
     {
       "name": "переміщння техніки",
@@ -68,7 +77,8 @@
           "probability": 1
         }
       ],
-      "shortcut": "7"
+      "shortcut": "7",
+      "enabled": true
     },
     {
       "name": "СОУ переміщення",
@@ -79,7 +89,8 @@
           "probability": 0
         }
       ],
-      "shortcut": "6"
+      "shortcut": "6",
+      "enabled": true
     },
     {
       "name": "ворожі БпЛА",
@@ -94,7 +105,8 @@
           "probability": 1
         }
       ],
-      "shortcut": "9"
+      "shortcut": "9",
+      "enabled": true
     },
     {
       "name": "РЕБ",
@@ -113,7 +125,8 @@
           "probability": 1
         }
       ],
-      "shortcut": "5"
+      "shortcut": "5",
+      "enabled": true
     },
     {
       "name": "ураження",
@@ -121,6 +134,26 @@
       "keywords": [
         {
           "word": "ранен",
+          "probability": 1
+        },
+        {
+          "word": "эвак",
+          "probability": 1
+        },
+        {
+          "word": "тяжелый",
+          "probability": 0
+        },
+        {
+          "word": "колес",
+          "probability": 0
+        },
+        {
+          "word": "по нам",
+          "probability": 1
+        },
+        {
+          "word": "разобрала",
           "probability": 1
         },
         {
@@ -228,7 +261,36 @@
           "probability": 1
         }
       ],
-      "shortcut": "3"
+      "shortcut": "3",
+      "enabled": true
+    },
+    {
+      "name": "підготовка переміщення",
+      "description": "В р-н н.п. {PLACE} виявлено приведення в бойову готовність ворожого підрозділу зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "ждем команды",
+          "probability": 1
+        },
+        {
+          "word": "ждите команды",
+          "probability": 1
+        },
+        {
+          "word": "готовн",
+          "probability": 1
+        },
+        {
+          "word": "по серости",
+          "probability": 1
+        },
+        {
+          "word": "готовимся",
+          "probability": 0
+        }
+      ],
+      "shortcut": "4",
+      "enabled": true
     },
     {
       "name": "переміщення",
@@ -236,6 +298,46 @@
       "keywords": [
         {
           "word": "отправля",
+          "probability": 1
+        },
+        {
+          "word": "засухари",
+          "probability": 1
+        },
+        {
+          "word": "заскочи",
+          "probability": 0
+        },
+        {
+          "word": "двину",
+          "probability": 1
+        },
+        {
+          "word": "подгруп",
+          "probability": 1
+        },
+                {
+          "word": "заводить",
+          "probability": 1
+        },
+        {
+          "word": "аккуратн",
+          "probability": 1
+        },
+        {
+          "word": "заплутали",
+          "probability": 1
+        },
+        {
+          "word": "заблудились",
+          "probability": 1
+        },
+        {
+          "word": "словитесь",
+          "probability": 1
+        },
+        {
+          "word": "перебеж",
           "probability": 1
         },
         {
@@ -319,11 +421,31 @@
           "probability": 1
         },
         {
+          "word": "групп",
+          "probability": 1
+        },
+        {
+          "word": "карандаш",
+          "probability": 1
+        },
+        {
+          "word": "выйдут",
+          "probability": 1
+        },
+        {
+          "word": "выходят",
+          "probability": 1
+        },
+        {
           "word": "подходим",
           "probability": 1
         },
         {
           "word": "под ноги",
+          "probability": 1
+        },
+        {
+          "word": "пересек",
           "probability": 1
         },
         {
@@ -567,8 +689,16 @@
           "probability": 1
         },
         {
-          "word": "выдвинул",
+          "word": "выдвину",
           "probability": 1
+        },
+        {
+          "word": "троп",
+          "probability": 0
+        },
+        {
+          "word": "вместе",
+          "probability": 0
         },
         {
           "word": "бежал",
@@ -579,31 +709,10 @@
           "probability": 1
         }
       ],
-      "shortcut": "1"
-    },
-    {
-      "name": "підготовка переміщення",
-      "description": "В р-н н.п. {PLACE} виявлено приведення в бойову готовність ворожого підрозділу зі складу {UNIT}",
-      "keywords": [
-        {
-          "word": "ждем команды",
-          "probability": 1
-        },
-        {
-          "word": "ждите команды",
-          "probability": 1
-        },
-        {
-          "word": "готовн",
-          "probability": 1
-        },
-        {
-          "word": "готовимся",
-          "probability": 0
-        }
-      ],
-      "shortcut": "4"
+      "shortcut": "1",
+      "enabled": true
     }
+    
     
   ]
 }

@@ -26,6 +26,9 @@ from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from src.armorkit.docxutils.tables import center_cell, vcenter, set_col_widths, set_row_min_height
+from docx.shared import Cm
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 
 
 # ---------- допоміжні ----------
@@ -218,23 +221,44 @@ def add_header(doc: Document, date_str: str, unit_name: str = "63 омсбр"):
 
 
 def add_overview_table(doc: Document, rows: list[dict]):
-    t = doc.add_table(rows=1, cols=6)
-    t.style = "Table Grid"
-    hdr = t.rows[0].cells
+    table = doc.add_table(rows=1, cols=6)
+    
+    tblPr = table._tbl.tblPr
+    tblLayout = OxmlElement('w:tblLayout')
+    tblLayout.set(qn('w:type'), 'fixed')
+    tblPr.append(tblLayout)
+    table.autofit = False
+    
+    table.columns[0].width = Cm(0.5)   # №
+    table.columns[1].width = Cm(3.0)   # Частота
+    table.columns[2].width = Cm(2.0)   # Вид модуляції
+    table.columns[3].width = Cm(3.5)   # Період
+    table.columns[4].width = Cm(10.0)   # Координати ← даємо простір
+    table.columns[5].width = Cm(2.0)   # Примітки
+    
+    coord_col = 4
+    for row in table.rows:
+        tcPr = row.cells[coord_col]._tc.get_or_add_tcPr()
+        no_wrap = OxmlElement('w:noWrap')
+        tcPr.append(no_wrap)
+    
+    table.style = "Table Grid"
+    hdr = table.rows[0].cells
     hdr[0].text = "№"; hdr[1].text = "Частота (МГц)"; hdr[2].text = "Вид модуляції"
     hdr[3].text = "Період активності"; hdr[4].text = "Координати"; hdr[5].text = "Примітки"
 
     for i, row in enumerate(rows, start=1):
-        c = t.add_row().cells
+        c = table.add_row().cells
         c[0].text = str(i)
         c[1].text = row["freq4"]
         c[2].text = row.get("modulation", "—")
         c[3].text = "—" if (row.get("period_start") == "-" and row.get("period_end") == "-") \
                     else f"{row['period_start']} — {row['period_end']}"
-        c[4].text = "—"; c[5].text = "—"
+        coord_text = row["coord"].replace(" ", "\u00A0")
+        c[4].text = coord_text; c[5].text = "—"
 
-    set_col_widths(t, [0.8, 1.4, 1.5, 2.6, 1.4, 1.2])
-    for row in t.rows:
+    set_col_widths(table, [0.8, 1.4, 1.5, 2.6, 1.4, 1.2])
+    for row in table.rows:
         set_row_min_height(row, cm=0.9)
         for cell in row.cells:
             center_cell(cell); vcenter(cell)
@@ -266,21 +290,54 @@ def main():
     freq_book_path = Path(li.freq_path) if hasattr(li, "freq_path") else Path("Frequencies_63.xlsx")
 
     freq_file = Path(__file__).resolve().parent / "data" / "freq.txt"
-    tokens = read_freq_tokens(freq_file)
+    
+    
+    # tokens = read_freq_tokens(freq_file)
+    
+    text = freq_file.read_text(encoding="utf-8", errors="ignore")
+    
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+
+    tokens, coords = [], []
+    for ln in lines:
+        if "," in ln:
+            left, right = ln.split(",", 1)
+            tokens.append(left.strip())
+            coords.append(right.strip())
+        else:
+            tokens.append(ln)
+            coords.append(None)
+            
+    print(f"Зчитано частоти та координати: {coords}")
+    
     freq4_list = tokens_to_freq4(tokens, reference_df)
 
     normalize_frequency_column(intercepts_df, reference_df, li.masks_df)
 
     rows, items = [], []
-    for f4 in freq4_list:
+    for i, f4 in enumerate(freq4_list):
         net_name = get_network_name_by_freq(f4, reference_df) or "—"
         modulation, nature, main_vz, sub_vz, area, period = read_ref_fields(freq_book_path, f4)
         p_start, p_end = activity_period_for_freq4(intercepts_df, f4)
         mask3 = mask3_from_reference(reference_df, f4)
 
-        rows.append({"freq4": f4, "modulation": modulation, "period_start": p_start, "period_end": p_end})
-        items.append({"freq4": f4, "network_name": net_name, "nature": nature, "main_vz": main_vz,
-                      "sub_vz": sub_vz, "mask3": mask3, "area": area, "period": period})
+        rows.append({
+            "freq4": f4,
+            "modulation": modulation,
+            "period_start": p_start,
+            "period_end": p_end,
+            "coord": coords[i],   # ← координата з того ж індекса
+        })
+        items.append({
+            "freq4": f4,
+            "network_name": net_name,
+            "nature": nature,
+            "main_vz": main_vz,
+            "sub_vz": sub_vz,
+            "mask3": mask3,
+            "area": area,
+            "period": period
+        })
 
     today_display = datetime.now().strftime("%d.%m.%Y")
     out_dir = Path.cwd() / "build"; out_dir.mkdir(parents=True, exist_ok=True)

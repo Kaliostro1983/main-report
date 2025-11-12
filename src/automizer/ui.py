@@ -15,23 +15,9 @@ from src.automizer.conclusions import (
     find_template_candidates,   # ← ДОДАТИ ОЦЕ
 )
 
-
 import pandas as pd
 
-# from src.automizer.conclusions import (
-#     load_conclusions,
-#     ConclusionTemplate,
-#     STATUS_EMPTY,
-#     STATUS_NEED_APPROVE,
-#     STATUS_APPROVED,
-#     COL_STATUS,
-#     COL_NOTES,
-#     COL_MATCHED_TEMPLATE,
-#     COL_MATCHED_WORD,
-#     COL_MULTI_MATCH,
-#     apply_autopick_to_df,
-# )
-from src.automizer.freqdict import COL_FREQ
+from src.automizer.freqdict import COL_FREQ, lookup_place_unit 
 from src.automizer.service import initialize_data
 
 # ---------- Допоміжні утиліти для збереження ----------
@@ -42,6 +28,35 @@ def save_df_over_original(df: pd.DataFrame, path: Path) -> None:
 class AutomizerApp:
     # Єдина назва колонки з текстом перехоплення (бекслеш треба екранувати)
     TEXT_COL = "р\\обмін"
+    
+    def _on_clear_notes(self) -> None:
+        """Очищає поле приміток і синхронізує з df (виклик із <Down>)."""
+        gi = self._global_index()
+        if gi == -1:
+            return
+        self.txt_notes.delete("1.0", tk.END)
+        self.df.at[gi, COL_NOTES] = ""
+
+    def _render_template_for_row(self, tmpl: ConclusionTemplate, row: pd.Series) -> str:
+        """Підставляє PLACE/UNIT у description шаблону за частотою поточного рядка."""
+        freq_val = row.get(COL_FREQ)
+        place, unit = lookup_place_unit(freq_val, self.ref_df)  # freqdict.py
+        return (tmpl.description or "").replace("{PLACE}", place).replace("{UNIT}", unit)
+
+    def _on_template_selected(self, event=None) -> None:
+        """Коли обрано пункт у комбобоксі — згенерувати текст і записати у примітки."""
+        name = self.cmb_template.get().strip()
+        tmpl = next((t for t in self.templates if t.name == name), None)
+        if not tmpl:
+            return
+        gi = self._global_index()
+        if gi == -1:
+            return
+        text = self._render_template_for_row(tmpl, self.df.iloc[gi])
+        self.txt_notes.delete("1.0", tk.END)
+        self.txt_notes.insert(tk.END, text)
+        self.df.at[gi, COL_NOTES] = text
+
 
     @staticmethod
     def row_text_safe(row: pd.Series, text_col: str) -> str:
@@ -140,8 +155,22 @@ class AutomizerApp:
         block2.pack(fill=tk.X, pady=(8, 0))
         lbl_notes = tk.Label(block2, text='Примітки (колонка "примітки")')
         lbl_notes.pack(anchor="w")
-        self.txt_notes = tk.Text(block2, height=5)
-        self.txt_notes.pack(fill=tk.X)
+        
+        notes_row = tk.Frame(block2)
+        notes_row.pack(fill=tk.X)
+
+        self.txt_notes = tk.Text(notes_row, height=5)
+        self.txt_notes.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        self.cmb_template = ttk.Combobox(
+            notes_row,
+            state="readonly",
+            width=28,
+            values=[t.name for t in self.templates]  # список назв шаблонів
+        )
+        self.cmb_template.set("Вибрати шаблон…")
+        self.cmb_template.pack(side=tk.LEFT, padx=(8, 0))
+        self.cmb_template.bind("<<ComboboxSelected>>", self._on_template_selected)
 
         # ----- Права панель (фіксована ширина) -----
         right = tk.Frame(self.root, width=300)
@@ -190,6 +219,7 @@ class AutomizerApp:
         # Стрілки ← / → — попередній / наступний (працює навіть коли фокус у полі приміток)
         self.root.bind_all("<Left>", lambda e: self._on_prev())
         self.root.bind_all("<Right>", lambda e: self._on_next())
+        self.root.bind_all("<Down>", lambda e: self._on_clear_notes())
 
 
     # ---------- Навігація та індексація ----------
