@@ -129,21 +129,54 @@ def find_template_candidates(text: str, templates: list[ConclusionTemplate]):
 
 
 
+# NEW helper: згрупувати збіги за шаблоном
+# ↓ ДОДАЙ це поруч із іншими хелперами
+def _group_by_template(candidates: list[tuple[ConclusionTemplate, KeywordRule]]):
+    """
+    Групує збіги за НАЗВОЮ шаблону.
+    Повертає:
+      groups: dict[name -> list[KeywordRule]]
+      order:  list[ConclusionTemplate] у порядку першої появи в candidates
+    """
+    groups: dict[str, list[KeywordRule]] = {}
+    order: list[ConclusionTemplate] = []
+    seen: set[str] = set()
+
+    for tmpl, rule in candidates:
+        name = tmpl.name
+        if name not in groups:
+            groups[name] = []
+        groups[name].append(rule)
+        if name not in seen:
+            order.append(tmpl)
+            seen.add(name)
+    return groups, order
+
+
+
 def decide_status_by_candidates(candidates: list[tuple[ConclusionTemplate, KeywordRule]]) -> str:
     """
-    Правила:
+    Логіка статусу:
       - 0 збігів -> empty
-      - 1 збіг:
-           probability==1 -> approved
-           probability==0 -> need_approve
-      - >1 збігів -> need_approve (беремо перший за порядком)
+      - рівно 1 тип висновку:
+          * якщо збіглося ≥2 слів цього типу -> approved
+          * інакше 1 слово -> за p цього слова (1 -> approved, 0 -> need_approve)
+      - >1 типів висновків -> need_approve
     """
     if len(candidates) == 0:
         return STATUS_EMPTY
-    if len(candidates) == 1:
-        _, rule = candidates[0]
-        return STATUS_APPROVED if rule.probability == 1 else STATUS_NEED_APPROVE
+
+    groups, _ = _group_by_template(candidates)
+    if len(groups) == 1:
+        only_rules = next(iter(groups.values()))
+        if len(only_rules) >= 2:
+            return STATUS_APPROVED
+        rule = only_rules[0]
+        return STATUS_APPROVED if getattr(rule, "probability", 0) == 1 else STATUS_NEED_APPROVE
+
     return STATUS_NEED_APPROVE
+
+
 
 
 def autopick_for_row(
@@ -151,12 +184,6 @@ def autopick_for_row(
     reference_df: pd.DataFrame,
     templates: list[ConclusionTemplate],
 ) -> tuple[str, str, str, bool, str]:
-    """
-    Повертає кортеж:
-    (status, matched_template, matched_word, multi_match, notes_text)
-
-    notes_text формуємо одразу за першим кандидатом (якщо він є).
-    """
     text = str(row.get(TEXT_COL, "") or "")
     freq_val = row.get(COL_FREQ)
 
@@ -165,16 +192,26 @@ def autopick_for_row(
 
     matched_template = ""
     matched_word = ""
-    multi = len(candidates) > 1
     notes = ""
 
-    if len(candidates) > 0:
-        tmpl, rule = candidates[0]
-        matched_template = tmpl.name
-        matched_word = rule.word
-        notes = _render_with_place_unit(tmpl.description, freq_val, reference_df)
+    groups, order = _group_by_template(candidates)
+    multi_templates = len(groups) > 1
 
-    return status, matched_template, matched_word, multi, notes
+    if candidates:
+        first_tmpl = order[0]  # перший за порядком появи
+        rules_for_first = groups.get(first_tmpl.name, [])
+
+        # взяти слово з p=1, якщо є; інакше перше
+        rule_p1 = next((r for r in rules_for_first if getattr(r, "probability", 0) == 1), None)
+        chosen_rule = rule_p1 or (rules_for_first[0] if rules_for_first else None)
+
+        matched_template = first_tmpl.name
+        matched_word = chosen_rule.word if chosen_rule else ""
+        notes = _render_with_place_unit(first_tmpl.description, freq_val, reference_df)
+
+    return status, matched_template, matched_word, multi_templates, notes
+
+
 
 
 def ensure_df_service_columns(df: pd.DataFrame) -> pd.DataFrame:

@@ -9,7 +9,11 @@
           "probability": 1
         },
         {
-          "word": "направление",
+          "word": "установки",
+          "probability": 0
+        },
+        {
+          "word": "новодк",
           "probability": 0
         },
         {
@@ -53,11 +57,19 @@
           "probability": 1
         },
         {
+          "word": "одна огонь",
+          "probability": 1
+        },
+        {
+          "word": "одной огонь",
+          "probability": 1
+        },
+        {
           "word": "угломер",
           "probability": 1
         },
         {
-          "word": "заряд",
+          "word": "заряд ",
           "probability": 1
         },
         {
@@ -69,11 +81,15 @@
       "enabled": true
     },
     {
-      "name": "переміщння техніки",
+      "name": "переміщння техніки СОУ",
       "description": "В р-н н.п. {PLACE} виявлено переміщення техніки СОУ в зоні функціонування ворожого розрахунку зі складу {UNIT}",
       "keywords": [
         {
           "word": "звук техники",
+          "probability": 1
+        },
+        {
+          "word": "слышу звук",
           "probability": 1
         }
       ],
@@ -109,8 +125,32 @@
       "enabled": true
     },
     {
+      "name": "Бій",
+      "description": "В р-н н.п. {PLACE} відмічено стрілецький бій в зоні функціонування ворожого розрахунку зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "дискотека",
+          "probability": 1
+        },
+        {
+          "word": "стрелкотня",
+          "probability": 1
+        },
+        {
+          "word": "двусторон",
+          "probability": 1
+        },
+        {
+          "word": "стрельба",
+          "probability": 0
+        }
+      ],
+      "shortcut": "5",
+      "enabled": true
+    },
+    {
       "name": "РЕБ",
-      "description": "В р-н н.п. {PLACE} виявлено застосування РЕБ ворожого розрахунку зі складу {UNIT}",
+      "description": "В р-н н.п. {PLACE} виявлено застосування РЕБ для прикриття переміщення ворожого розрахунку зі складу {UNIT}",
       "keywords": [
         {
           "word": "баня ",
@@ -128,148 +168,32 @@
       "shortcut": "5",
       "enabled": true
     },
-    {
-      "name": "ураження",
-      "description": "В р-н н.п. {PLACE} виявлено ураження ворожого підрозділу зі складу {UNIT}",
-      "keywords": [
         {
-          "word": "ранен",
-          "probability": 1
-        },
-        {
-          "word": "эвак",
-          "probability": 1
-        },
-        {
-          "word": "тяжелый",
-          "probability": 0
-        },
-        {
-          "word": "колес",
-          "probability": 0
-        },
-        {
-          "word": "по нам",
-          "probability": 1
-        },
-        {
-          "word": "разобрала",
-          "probability": 1
-        },
-        {
-          "word": "помощь",
-          "probability": 0
-        },
-        {
-          "word": "евакуация",
-          "probability": 1
-        },
-        {
-          "word": "оказ",
-          "probability": 0
-        },
-        {
-          "word": "оторвало",
-          "probability": 1
-        },
-        {
-          "word": "сквозное",
-          "probability": 1
-        },
-        {
-          "word": "убит",
-          "probability": 1
-        },
-        {
-          "word": "погиб",
-          "probability": 1
-        },
-        {
-          "word": "перелом",
-          "probability": 1
-        },
-        {
-          "word": "разорва",
-          "probability": 1
-        },
-        {
-          "word": "подбит",
-          "probability": 1
-        },
-        {
-          "word": "взорван",
-          "probability": 1
-        },
-        {
-          "word": "взорвание",
-          "probability": 1
-        },
-        {
-          "word": "разнес",
-          "probability": 1
-        },
-        {
-          "word": "уничтож",
-          "probability": 1
-        },
-        {
-          "word": "сгорел",
-          "probability": 1
-        },
-        {
-          "word": "сгорела",
-          "probability": 1
-        },
-        {
-          "word": "сгорело",
-          "probability": 1
-        },
-        {
-          "word": "оторв",
-          "probability": 1
-        },
-        {
-          "word": "сгорели",
-          "probability": 1
-        },
-        {
-          "word": "двухсот",
-          "probability": 1
-        },
-        {
-          "word": "трехсот",
-          "probability": 1
-        },
-        {
-          "word": "осколок",
-          "probability": 1
-        },
-        {
-          "word": "на мину",
-          "probability": 1
-        },
-        {
-          "word": "контуз",
-          "probability": 1
-        },
-        {
-          "word": "подоровал",
-          "probability": 1
-        },
-        {
-          "word": "пятк",
-          "probability": 1
-        }
-      ],
-      "shortcut": "3",
-      "enabled": true
-    },
-    {
       "name": "підготовка переміщення",
-      "description": "В р-н н.п. {PLACE} виявлено приведення в бойову готовність ворожого підрозділу зі складу {UNIT}",
+      "description": "В р-н н.п. {PLACE} виявлено підготовку до переміщення ворожого підрозділу зі складу {UNIT}",
       "keywords": [
         {
           "word": "ждем команды",
+          "probability": 1
+        },
+        {
+          "word": "ждем погод",
+          "probability": 1
+        },
+        {
+          "word": "ждет погод",
+          "probability": 1
+        },
+        {
+          "word": "на фоксе",
+          "probability": 0
+        },
+        {
+          "word": "на старте",
+          "probability": 1
+        },
+        {
+          "word": "изучайте",
           "probability": 1
         },
         {
@@ -299,6 +223,62 @@
         {
           "word": "отправля",
           "probability": 1
+        },
+        {
+          "word": "прибудет",
+          "probability": 1
+        },
+        {
+          "word": "прибудут",
+          "probability": 1
+        },
+        {
+          "word": "гости",
+          "probability": 1
+        },
+        {
+          "word": "мы на ",
+          "probability": 1
+        },
+        {
+          "word": "мы пришли",
+          "probability": 1
+        },
+        {
+          "word": "ушли",
+          "probability": 0
+        },
+        {
+          "word": "в пути",
+          "probability": 1
+        },
+        {
+          "word": "на полпути",
+          "probability": 1
+        },
+        {
+          "word": "выходим",
+          "probability": 0
+        },
+        {
+          "word": "дойти",
+          "probability": 0
+        },
+        {
+          "word": "до точки",
+          "probability": 0
+        },
+        {
+          "word": "идет",
+          "probability": 0
+        },
+        {
+          "word": "прикатились",
+          "probability": 0
+        },
+        {
+          "word": "отодвига",
+          "probability": 0
         },
         {
           "word": "засухари",
@@ -389,11 +369,39 @@
           "probability": 1
         },
         {
+          "word": "тронулись",
+          "probability": 1
+        },
+        {
+          "word": "вышли",
+          "probability": 0
+        },
+        {
+          "word": "троечк",
+          "probability": 1
+        },
+        {
+          "word": "твикс",
+          "probability": 1
+        },
+        {
           "word": "идите",
           "probability": 1
         },
         {
+          "word": "идти",
+          "probability": 1
+        },
+        {
           "word": "на подходен",
+          "probability": 1
+        },
+        {
+          "word": "находимся",
+          "probability": 1
+        },
+        {
+          "word": "находитесь",
           "probability": 1
         },
         {
@@ -421,7 +429,15 @@
           "probability": 1
         },
         {
-          "word": "групп",
+          "word": "груп",
+          "probability": 1
+        },
+        {
+          "word": "прикатились",
+          "probability": 1
+        },
+        {
+          "word": "доезжаю",
           "probability": 1
         },
         {
@@ -711,8 +727,159 @@
       ],
       "shortcut": "1",
       "enabled": true
+    },
+    {
+      "name": "ураження",
+      "description": "В р-н н.п. {PLACE} виявлено ураження ворожого підрозділу зі складу {UNIT}",
+      "keywords": [
+        {
+          "word": "ранен",
+          "probability": 0
+        },
+        {
+          "word": "прилет",
+          "probability": 0
+        },
+        {
+          "word": "колесо",
+          "probability": 0
+        },
+        {
+          "word": "растяжк",
+          "probability": 1
+        },
+        {
+          "word": "разбирали",
+          "probability": 0
+        },
+        {
+          "word": "эвак",
+          "probability": 1
+        },
+        {
+          "word": "тяжелый",
+          "probability": 0
+        },
+        {
+          "word": "колес",
+          "probability": 0
+        },
+        {
+          "word": "по нам",
+          "probability": 1
+        },
+        {
+          "word": "разобрала",
+          "probability": 1
+        },
+        {
+          "word": "помощь",
+          "probability": 0
+        },
+        {
+          "word": "евакуация",
+          "probability": 1
+        },
+        {
+          "word": "оказ",
+          "probability": 0
+        },
+        {
+          "word": "оторвало",
+          "probability": 1
+        },
+        {
+          "word": "сквозное",
+          "probability": 1
+        },
+        {
+          "word": "убит",
+          "probability": 1
+        },
+        {
+          "word": "погиб",
+          "probability": 1
+        },
+        {
+          "word": "перелом",
+          "probability": 1
+        },
+        {
+          "word": "разорва",
+          "probability": 1
+        },
+        {
+          "word": "подбит",
+          "probability": 1
+        },
+        {
+          "word": "взорван",
+          "probability": 1
+        },
+        {
+          "word": "взорвание",
+          "probability": 1
+        },
+        {
+          "word": "разнес",
+          "probability": 1
+        },
+        {
+          "word": "уничтож",
+          "probability": 1
+        },
+        {
+          "word": "сгорел",
+          "probability": 1
+        },
+        {
+          "word": "сгорела",
+          "probability": 1
+        },
+        {
+          "word": "сгорело",
+          "probability": 1
+        },
+        {
+          "word": "оторв",
+          "probability": 1
+        },
+        {
+          "word": "сгорели",
+          "probability": 1
+        },
+        {
+          "word": "двухсот",
+          "probability": 1
+        },
+        {
+          "word": "трехсот",
+          "probability": 1
+        },
+        {
+          "word": "осколок",
+          "probability": 1
+        },
+        {
+          "word": "на мину",
+          "probability": 1
+        },
+        {
+          "word": "контуз",
+          "probability": 1
+        },
+        {
+          "word": "подорвал",
+          "probability": 1
+        },
+        {
+          "word": "пятк",
+          "probability": 1
+        }
+      ],
+      "shortcut": "3",
+      "enabled": true
     }
-    
     
   ]
 }
