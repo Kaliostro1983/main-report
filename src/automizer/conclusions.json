@@ -69,10 +69,6 @@
           "probability": 1
         },
         {
-          "word": "заряд ",
-          "probability": 1
-        },
-        {
           "word": "восстановить наводку",
           "probability": 1
         }
@@ -86,6 +82,14 @@
       "keywords": [
         {
           "word": "звук техники",
+          "probability": 1
+        },
+        {
+          "word": "звуки техники",
+          "probability": 1
+        },
+        {
+          "word": "слишна",
           "probability": 1
         },
         {
@@ -139,10 +143,6 @@
         {
           "word": "двусторон",
           "probability": 1
-        },
-        {
-          "word": "стрельба",
-          "probability": 0
         }
       ],
       "shortcut": "5",
@@ -198,10 +198,6 @@
         },
         {
           "word": "ждите команды",
-          "probability": 1
-        },
-        {
-          "word": "готовн",
           "probability": 1
         },
         {
@@ -266,10 +262,6 @@
         },
         {
           "word": "до точки",
-          "probability": 0
-        },
-        {
-          "word": "идет",
           "probability": 0
         },
         {
@@ -494,7 +486,7 @@
         },
         {
           "word": "выйдите",
-          "probability": 1
+          "probability": 0
         },
         {
           "word": "заходим",
@@ -734,10 +726,6 @@
       "keywords": [
         {
           "word": "ранен",
-          "probability": 0
-        },
-        {
-          "word": "прилет",
           "probability": 0
         },
         {
