@@ -2,3 +2,25 @@ Repo:   D:\Armor\main-report
 Remote: https://github.com/Kaliostro1983/main-report.git
 Branch: main
 HEAD(before): c2c2d284469705671be05200844c02ece33e036f
+warning: in the working copy of 'logs/2025-11-14_19-53-01_commit_and_push.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/automizer/conclusions.json', LF will be replaced by CRLF the next time Git touches it
+[main d4bbf0f] Auto commit 2025-11-23_17-48-32
+ 5 files changed, 83 insertions(+), 87 deletions(-)
+ create mode 100644 logs/2025-11-23_17-48-32_commit_and_push.log
+fatal: It seems that there is already a rebase-merge directory, and
+I wonder if you are in the middle of another rebase.  If that is the
+case, please try
+	git rebase (--continue | --abort | --skip)
+If that is not the case, please
+	rm -fr ".git/rebase-merge"
+and run me again.  I am stopping in case you still have something
+valuable there.
+
+To https://github.com/Kaliostro1983/main-report.git
+   c2c2d28..d4bbf0f  main -> main
+HEAD(after): d4bbf0f53656d20dc28ae752f7c3b5daf346eb83
+* d4bbf0f (HEAD -> main, origin/main) Auto commit 2025-11-23_17-48-32
+* c2c2d28 Auto commit 2025-11-14_19-53-01
+* 7443fdf Auto commit 2025-11-12_09-36-27
+* 26520fa Add/update helper BATs with logs and pause
+* 2c228eb Auto commit 2025-11-11_09-58-36
