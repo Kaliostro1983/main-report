@@ -9,6 +9,10 @@
           "probability": 1
         },
         {
+          "word": "беглым огонь",
+          "probability": 1
+        },
+        {
           "word": "установки",
           "probability": 0
         },
@@ -202,6 +206,10 @@
         },
         {
           "word": "по серости",
+          "probability": 1
+        },
+        {
+          "word": "завтра",
           "probability": 1
         },
         {
@@ -545,10 +553,6 @@
           "probability": 1
         },
         {
-          "word": "прошел",
-          "probability": 1
-        },
-        {
           "word": "прошли",
           "probability": 1
         },
@@ -726,6 +730,10 @@
       "keywords": [
         {
           "word": "ранен",
+          "probability": 0
+        },
+        {
+          "word": "разъебыв",
           "probability": 0
         },
         {

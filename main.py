@@ -34,7 +34,25 @@ def main():
     ap.add_argument("--config", default="config.yml", help="Шлях до YAML-конфіга")
     ap.add_argument(
         "--mode",
-        choices=["read", "normalize", "freq-groups", "draft-docx", "run", "active-freqs", "peleng-gui", "artyleria-report", "eralonky", "enemies", "simple-report", "still-alive", "move_enemies", "freq-lists", "automizer"],
+                choices=[
+            "read",
+            "normalize",
+            "freq-groups",
+            "draft-docx",
+            "run",
+            "active-freqs",
+            "peleng-gui",
+            "artyleria-report",
+            "eralonky",
+            "enemies",
+            "simple-report",
+            "still-alive",
+            "move_enemies",
+            "enemy-moves-sum",  # НОВИЙ РЕЖИМ
+            "freq-lists",
+            "automizer",
+        ],
+
         default="read",
         help="read=зчитати; normalize=нормалізувати 'Частота' і зберегти XLSX; "
              "freq-groups=вивести групи частот; draft-docx=згенерувати DOCX-чернетку; run=повний конвеєр; active-freqs=звіт 'Активні мережі'",
@@ -99,6 +117,14 @@ def main():
         peleng_gui_main()
         return
     
+    
+    elif args.mode == "enemy-moves-sum":
+        from src.enemies_sum.enemies_moves_report import build_enemy_moves_report_docx
+        path = build_enemy_moves_report_docx(args.config)
+        print(f"[OK] Звіт про переміщення ворога збережено: {path}")
+        return
+
+
     elif args.mode == "artyleria-report":
         from src.artyleria.runner import run as arty_run
         arty_run()
