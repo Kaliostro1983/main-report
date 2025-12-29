@@ -14,11 +14,11 @@
         },
         {
           "word": "установки",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "новодк",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "корректировку",
@@ -110,7 +110,7 @@
       "keywords": [
         {
           "word": "пидар",
-          "probability": 0
+          "probability": 1
         }
       ],
       "shortcut": "6",
@@ -190,7 +190,7 @@
         },
         {
           "word": "на фоксе",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "на старте",
@@ -214,7 +214,7 @@
         },
         {
           "word": "готовимся",
-          "probability": 0
+          "probability": 1
         }
       ],
       "shortcut": "4",
@@ -250,7 +250,7 @@
         },
         {
           "word": "ушли",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "в пути",
@@ -262,23 +262,23 @@
         },
         {
           "word": "выходим",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "дойти",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "до точки",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "прикатились",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "отодвига",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "засухари",
@@ -286,7 +286,7 @@
         },
         {
           "word": "заскочи",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "двину",
@@ -374,7 +374,7 @@
         },
         {
           "word": "вышли",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "троечк",
@@ -494,7 +494,7 @@
         },
         {
           "word": "выйдите",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "заходим",
@@ -706,11 +706,11 @@
         },
         {
           "word": "троп",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "вместе",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "бежал",
@@ -730,15 +730,15 @@
       "keywords": [
         {
           "word": "ранен",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "разъебыв",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "колесо",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "растяжк",
@@ -746,7 +746,7 @@
         },
         {
           "word": "разбирали",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "эвак",
@@ -754,11 +754,11 @@
         },
         {
           "word": "тяжелый",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "колес",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "по нам",
@@ -770,7 +770,7 @@
         },
         {
           "word": "помощь",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "евакуация",
@@ -778,7 +778,7 @@
         },
         {
           "word": "оказ",
-          "probability": 0
+          "probability": 1
         },
         {
           "word": "оторвало",

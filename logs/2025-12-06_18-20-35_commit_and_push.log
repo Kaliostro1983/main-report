@@ -2,3 +2,31 @@ Repo:   D:\Armor\main-report
 Remote: https://github.com/Kaliostro1983/main-report.git
 Branch: main
 HEAD(before): 705cb8ef0eaec9c8b4a64b6134442086c3d17a1d
+warning: in the working copy of 'logs/2025-11-25_09-11-06_commit_and_push.log', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/automizer/conclusions.json', LF will be replaced by CRLF the next time Git touches it
+[main 16bffb7] Auto commit 2025-12-06_18-20-35
+ 11 files changed, 465 insertions(+), 85 deletions(-)
+ create mode 100644 logs/2025-12-06_18-20-35_commit_and_push.log
+ create mode 100644 scripts/enemy_moves_sum_report.bat
+ create mode 100644 src/enemies_sum/__init__.py
+ create mode 100644 src/enemies_sum/enemies_moves_report.py
+ create mode 100644 src/enemies_sum/moves.xlsx
+ create mode 100644 src/enemies_sum/~$moves.xlsx
+fatal: It seems that there is already a rebase-merge directory, and
+I wonder if you are in the middle of another rebase.  If that is the
+case, please try
+	git rebase (--continue | --abort | --skip)
+If that is not the case, please
+	rm -fr ".git/rebase-merge"
+and run me again.  I am stopping in case you still have something
+valuable there.
+
+To https://github.com/Kaliostro1983/main-report.git
+   705cb8e..16bffb7  main -> main
+HEAD(after): 16bffb747635ccecb4c5f45e03b3bc221e21bcb1
+* 16bffb7 (HEAD -> main, origin/main) Auto commit 2025-12-06_18-20-35
+* 705cb8e Auto commit 2025-11-25_09-11-06
+* 338e9be Auto commit 2025-11-24_08-06-33
+* d4bbf0f Auto commit 2025-11-23_17-48-32
+* c2c2d28 Auto commit 2025-11-14_19-53-01

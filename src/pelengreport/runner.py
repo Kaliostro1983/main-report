@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from datetime import datetime
 import sys
+import logging
 
 # імпорти відносно пакета
 from .parser import parse_whatsapp_text
@@ -78,6 +79,9 @@ def run(input_txt: Path, out_dir: Path | None = None) -> Path:
         lines = f.readlines()
         
     records = list(parse_whatsapp_text(lines))  # ← парсимо WhatsApp у список записів
+    logging.warning(
+            f"Знайдено {len(records)} записів у вхідному файлі."
+        )
     build_docx(records, out_path)               # ← генеруємо DOCX «як у старій версії»
 
 

@@ -1,5 +1,6 @@
 # src/pelengreport/parser.py
 import re
+import logging
 
 HDR = re.compile(
     r"Пеленг\s+РЕР_63:\s*(?P<val>\d+(?:\.\d+)?)\s*/\s*(?P<date>\d{2}\.\d{2}\.\d{4})\s+(?P<time>\d{1,2}[:.]\d{2})",
@@ -34,10 +35,14 @@ def parse_whatsapp_text(lines: list[str]):
             sanitize_mgrs(s); return True
         except Exception:
             return False
+        
+    logging.warning(f"Парсинг WhatsApp тексту: {len(lines)} рядків")
 
     i, n = 0, len(lines)
     while i < n:
         m = HDR.search(lines[i])
+        logging.warning(f"Парсинг рядка {i}: {lines[i].rstrip()}")
+        logging.warning(f"Результат пошуку заголовка: {m}")
         if not m:
             i += 1
             continue
