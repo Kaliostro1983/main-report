@@ -1,6 +1,8 @@
 from pathlib import Path
 from datetime import datetime
 
+import re
+
 import logging
 import pandas as pd
 from docx import Document
@@ -147,17 +149,34 @@ def _add_header(doc: Document):
     doc.add_paragraph("")
 
 
+import re
+
+
+def _extract_time_for_sort(text: str):
+    """
+    Витягує перший час формату HH:MM з рядка.
+    Якщо не знайдено — повертає None (такі підуть в кінець).
+    """
+    if not isinstance(text, str):
+        return None
+
+    m = re.search(r"\b([01]\d|2[0-3]):([0-5]\d)\b", text)
+    if not m:
+        return None
+
+    return m.group(0)
+
+
 def _add_group_blocks(doc: Document, enriched_df: pd.DataFrame):
     """
     Створює текстові блоки по кожній групі.
 
     Для кожної групи:
       В зоні функціонування [назва групи] виявлено наступні переміщення:
-      - [Переміщення] (р/м:[Частота/маска], [Підрозділ]).
+      • [Переміщення] (р/м:[Частота/маска], [Підрозділ]).
     """
 
     if enriched_df.empty:
-        # якщо раптом немає жодних даних – все одно щось напишемо
         doc.add_paragraph("За наявними даними переміщень ворога не зафіксовано.")
         return
 
@@ -165,12 +184,12 @@ def _add_group_blocks(doc: Document, enriched_df: pd.DataFrame):
 
     first_block = True
     for group_name in groups:
-        group_df = enriched_df[enriched_df["Група"] == group_name]
+        group_df = enriched_df[enriched_df["Група"] == group_name].copy()
 
         if group_df.empty:
             continue
 
-        # відступ перед блоком (між блоками буде один порожній рядок)
+        # один порожній рядок між блоками
         if not first_block:
             doc.add_paragraph("")
         first_block = False
@@ -181,25 +200,25 @@ def _add_group_blocks(doc: Document, enriched_df: pd.DataFrame):
         run = p.add_run(header_text)
         run.bold = True
 
+        # ---- сортування за часом усередині блоку ----
+        group_df["_sort_time"] = group_df["Переміщення"].apply(_extract_time_for_sort)
 
-        # записи цієї групи
-        p = doc.add_paragraph(style='List Bullet')
+        group_df["_sort_key"] = group_df["_sort_time"].fillna("99:99")
+        group_df = group_df.sort_values(by="_sort_key", kind="stable")
+
+        # ---- булети ----
         for _, row in group_df.iterrows():
             move_text = str(row.get("Переміщення", "")).strip()
             freq_value = row.get("Частота/маска", "")
             unit = str(row.get("Підрозділ", "")).strip()
 
-            # захист від None
             freq_str = "" if pd.isna(freq_value) else str(freq_value)
             unit_str = "" if pd.isna(unit) else unit
 
-            line = f"- {move_text} (р/м:{freq_str}, {unit_str})."
-            
-            p.add_run(line)
+            line = f"{move_text} (р/м:{freq_str}, {unit_str})."
 
+            doc.add_paragraph(line, style="List Bullet")
 
-        # порожній рядок після блоку
-        doc.add_paragraph("")
 
 
 def build_enemy_moves_report_docx(config_path: str) -> Path:

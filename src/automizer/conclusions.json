@@ -589,6 +589,70 @@
           "probability": 1
         },
         {
+          "word": "точк",
+          "probability": 1
+        },
+        {
+          "word": "район",
+          "probability": 1
+        },
+        {
+          "word": "нора",
+          "probability": 0
+        },
+        {
+          "word": "глазки",
+          "probability": 0
+        },
+        {
+          "word": "палочк",
+          "probability": 1
+        },
+        {
+          "word": "карандаш",
+          "probability": 1
+        },
+        {
+          "word": "твикс",
+          "probability": 1
+        },
+        {
+          "word": "гулять",
+          "probability": 1
+        },
+        {
+          "word": "пошел",
+          "probability": 1
+        },
+        {
+          "word": "шли",
+          "probability": 1
+        },
+        {
+          "word": "собира",
+          "probability": 1
+        },
+        {
+          "word": "подход",
+          "probability": 1
+        },
+        {
+          "word": "сворач",
+          "probability": 1
+        },
+        {
+          "word": "откат",
+          "probability": 1
+        },
+        {
+          "word": "встре",
+          "probability": 1
+        },
+        {
+          "word": "троп",
+          "probability": 1
+        },
+        {
           "word": "выходим",
           "probability": 1
         },
@@ -734,10 +798,6 @@
         },
         {
           "word": "разъебыв",
-          "probability": 1
-        },
-        {
-          "word": "колесо",
           "probability": 1
         },
         {
