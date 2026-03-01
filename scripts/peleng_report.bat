@@ -11,11 +11,7 @@ if exist ".venv\Scripts\activate" (
 )
 
 REM Виклик з опціональним шляхом: peleng_report.bat [txt-file]
-if "%~1"=="" (
-    python -m src.pelengreport.gui
-) else (
-    python -m src.pelengreport.runner "%~1"
-)
+python -m src.pelengreport.gui
 
 popd
 pause
