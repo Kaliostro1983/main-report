@@ -110,6 +110,10 @@
       "keywords": [
         {
           "word": "пидар",
+          "probability": 0
+        },
+        {
+          "word": "пидор",
           "probability": 1
         }
       ],
@@ -210,7 +214,7 @@
         },
         {
           "word": "завтра",
-          "probability": 1
+          "probability": 0
         },
         {
           "word": "готовимся",
@@ -494,7 +498,8 @@
         },
         {
           "word": "выйдите",
-          "probability": 1
+          "probability": 1,
+          "exceptions": ["на меня"]
         },
         {
           "word": "заходим",
@@ -590,18 +595,14 @@
         },
         {
           "word": "точк",
-          "probability": 1
-        },
-        {
-          "word": "район",
-          "probability": 1
-        },
-        {
-          "word": "нора",
           "probability": 0
         },
         {
-          "word": "глазки",
+          "word": "район",
+          "probability": 0
+        },
+        {
+          "word": "нора",
           "probability": 0
         },
         {
@@ -617,7 +618,7 @@
           "probability": 1
         },
         {
-          "word": "гулять",
+          "word": "гуля",
           "probability": 1
         },
         {

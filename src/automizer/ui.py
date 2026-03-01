@@ -6,13 +6,20 @@ from tkinter import ttk, messagebox
 from tkinter import font as tkfont
 from pathlib import Path
 from typing import Any, List
+from src.automizer.analysis_engine import analyze_row
+
+from src.automizer.analysis_engine import analyze_text
+
 
 from src.automizer.conclusions import (
     load_conclusions, ConclusionTemplate,
+    apply_autopick_to_df
+)
+
+from src.automizer.conclusion_consts import (
     STATUS_EMPTY, STATUS_NEED_APPROVE, STATUS_APPROVED,
     COL_STATUS, COL_NOTES, COL_MATCHED_TEMPLATE, COL_MATCHED_WORD, COL_MULTI_MATCH,
-    apply_autopick_to_df,
-    find_template_candidates,   # ← ДОДАТИ ОЦЕ
+    TEXT_COL,
 )
 
 import pandas as pd
@@ -56,6 +63,42 @@ class AutomizerApp:
         self.txt_notes.delete("1.0", tk.END)
         self.txt_notes.insert(tk.END, text)
         self.df.at[gi, COL_NOTES] = text
+        
+    def _on_test_mode_toggle(self) -> None:
+        # дозволяємо/забороняємо редагувати поле перехоплення
+        if self.test_mode.get():
+            self.txt_intercept.config(state="normal")
+            self.lbl_auto.config(text="Тестовий режим: встав текст у поле перехоплення і натисни 'Тест'.")
+        else:
+            # повертаємо стандартну поведінку — підвантажуємо поточний запис
+            self._load_record()
+
+    def _on_test_clicked(self) -> None:
+        if not self.test_mode.get():
+            messagebox.showinfo("Тест", "Увімкни 'Тестовий режим', щоб тестувати вручну.")
+            return
+
+        text = self.txt_intercept.get("1.0", tk.END).strip()
+
+        # беремо freq з поточного рядка, якщо він є; інакше None
+        gi = self._global_index()
+        freq_val = None
+        if gi != -1:
+            freq_val = self.df.iloc[gi].get(COL_FREQ)
+
+        res = analyze_text(
+            text=text,
+            freq_value=freq_val,
+            reference_df=self.ref_df,
+            templates=self.templates,
+        )
+
+        # показуємо висновок + критерії справа
+        # і паралельно можна підставити notes в "Примітки"
+        self.lbl_auto.config(text=res.explain_text)
+
+        self.txt_notes.delete("1.0", tk.END)
+        self.txt_notes.insert(tk.END, res.notes or "")
 
 
     @staticmethod
@@ -196,10 +239,10 @@ class AutomizerApp:
         self.btn_update.pack(pady=(0, 10), fill=tk.X)
 
         # Фільтри статусів
-        tk.Label(right, text="Показувати зі статусом:").pack(anchor="w")
-        self.chk_empty = tk.Checkbutton(right, text="empty", variable=self.filter_show_empty, command=self._on_filters_changed)
-        self.chk_need = tk.Checkbutton(right, text="need_approve", variable=self.filter_show_need, command=self._on_filters_changed)
-        self.chk_ok   = tk.Checkbutton(right, text="approved", variable=self.filter_show_approved, command=self._on_filters_changed)
+        tk.Label(right, text="Статус висновка:").pack(anchor="w")
+        self.chk_empty = tk.Checkbutton(right, text="відсутній", variable=self.filter_show_empty, command=self._on_filters_changed)
+        self.chk_need = tk.Checkbutton(right, text="на модерації", variable=self.filter_show_need, command=self._on_filters_changed)
+        self.chk_ok   = tk.Checkbutton(right, text="з висновком", variable=self.filter_show_approved, command=self._on_filters_changed)
         self.chk_empty.pack(anchor="w")
         self.chk_need.pack(anchor="w")
         self.chk_ok.pack(anchor="w")
@@ -207,6 +250,20 @@ class AutomizerApp:
         # Підказка/статус — під чекбоксами, багаторядкова
         self.lbl_auto = tk.Label(right, text="", justify="left", fg="#555", wraplength=280)
         self.lbl_auto.pack(pady=(8, 0), anchor="w")
+        
+        # --- Тестовий режим ---
+        self.test_mode = tk.BooleanVar(self.root, value=False)
+
+        self.chk_test = tk.Checkbutton(
+            right,
+            text="Тестовий режим",
+            variable=self.test_mode,
+            command=self._on_test_mode_toggle
+        )
+        self.chk_test.pack(anchor="w", pady=(10, 0))
+
+        self.btn_test = tk.Button(right, text="Тест", command=self._on_test_clicked)
+        self.btn_test.pack(pady=(4, 0), fill=tk.X)
 
 
 
@@ -275,11 +332,19 @@ class AutomizerApp:
 
 
         # Усі збіги для цього тексту
-        cands = find_template_candidates(text_val, self.templates)  # [(tmpl, rule), ...]
+        result = analyze_row(
+            row=self.df.iloc[gi],
+            reference_df=self.ref_df,
+            templates=self.templates,
+        )
+
+        cands = result.candidates
+        st = result.status
+        multi = result.multi
+
         mt = str(row.get(COL_MATCHED_TEMPLATE, "") or "")
         mw = str(row.get(COL_MATCHED_WORD, "") or "")
-        st = str(row.get(COL_STATUS, "") or STATUS_EMPTY)
-        multi = bool(row.get(COL_MULTI_MATCH, False))
+     
 
         lines = [f"Статус: {st}"]
         if mt:
@@ -330,19 +395,23 @@ class AutomizerApp:
             messagebox.showerror("Помилка", f"Не вдалось зберегти файл:\n{ex}")
 
     def _on_update_clicked(self) -> None:
-        # Перечитуємо дані з диска, автопідбір виконується в initialize_data
         data = initialize_data(
             config_path=self.config_path,
             conclusions_path=self.conclusions_path,
-            skip_approved_on_reload=True,  # не чіпати вже затверджені
+            skip_approved_on_reload=True,
         )
         self.df = data["df"]
         self.ref_df = data["ref_df"]
         self.templates = data["templates"]
-        # Перебудувати видимі за фільтрами
+
+        # ✅ ВАЖЛИВО: оновити шлях файлу для збереження
+        self.report_path = Path(data["report_path"])
+        self.config_path = Path(data["cfg_path"])
+
         self._rebuild_visible_indices()
         self._load_record()
         messagebox.showinfo("Готово", "Дані оновлено.")
+
 
     def _on_filters_changed(self) -> None:
         self._rebuild_visible_indices()

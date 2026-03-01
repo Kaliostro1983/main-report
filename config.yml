@@ -7,6 +7,13 @@ paths:
 
 tz: "Europe/Kyiv"
 
+moves:
+  source: gsheet_csv
+  spreadsheet_id: "1coeGb6xJqDZnHYRTcwuru0RfbzlTffod"
+  gid: "1451091468"   # <- підставиш gid потрібної вкладки; якщо прибрати gid, візьме “перший” таб
+  # source: xlsx
+  # xlsx_path: "D:/Armor/main-report/src/enemies_sum/moves.xlsx"
+
 columns:
   reference:
     # колонки з Frequencies_63.xlsx
@@ -49,8 +56,12 @@ grouping:
       - match: "(?i)^\\s*(\\d+)\\s*омсбр\\b.*$"
         to:    "\\1 омсбр"
 
+    
+
 activefrequencies:
   unit_display: "63 омсбр"                # піде у шапку та в ім'я файлу
   area_title: "КРЕМІННА (СМУГА н.п. ЯМПОЛІВКА – ТОРСЬКЕ – ЯМПІЛЬ)"
   footer_note: "Решта частот — ймовірно закрита цифра або похибка пеленгації/ідентифікації, що потребує додаткової перевірки."
   footer_signature: "Командир взводу РЕР ____________ СТЕПУРА Андрій Іванович ________________________"
+
+

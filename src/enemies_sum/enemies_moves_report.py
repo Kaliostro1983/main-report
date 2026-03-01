@@ -12,6 +12,9 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from src.armorkit.data_loader import load_config, load_inputs
 from src.armorkit.docxutils.safe_save import safe_save_docx
 
+from src.armorkit.data_provider.moves_provider import load_moves_df
+from src.armorkit.normalize_freq import normalize_numeric_column
+
 
 def _enrich_moves_with_reference(moves_df: pd.DataFrame, reference_df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -25,7 +28,8 @@ def _enrich_moves_with_reference(moves_df: pd.DataFrame, reference_df: pd.DataFr
     df = moves_df.copy()
 
     # гарантуємо числовий формат для join
-    df["Частота/маска"] = df["Частота/маска"].astype(float)
+    # df["Частота/маска"] = df["Частота/маска"].astype(float)
+    df = normalize_numeric_column(df, "Частота/маска")
 
     ref = reference_df.copy()
 
@@ -57,20 +61,26 @@ def _enrich_moves_with_reference(moves_df: pd.DataFrame, reference_df: pd.DataFr
         merged["Хто"] = None
 
     # 2) fallback: для рядків без Підрозділ пробуємо join по Частота
+    # 2) fallback: для рядків без Підрозділ пробуємо join по Частота
     if "Частота" in ref_sub.columns:
         mask_missing = merged["Підрозділ"].isna()
         if mask_missing.any():
-            df_missing = df[mask_missing].copy()
-            fallback = df_missing.merge(
-                ref_sub[["Частота", "Підрозділ", "Хто"]],
+            # беремо саме ті рядки, що "порожні", з merged (індекси збігаються)
+            missing_rows = merged.loc[mask_missing, ["Частота/маска"]].copy()
+
+            # дедуп довідника по Частота, щоб merge не розмножував рядки
+            ref_freq = ref_sub[["Частота", "Підрозділ", "Хто"]].drop_duplicates(subset=["Частота"], keep="first")
+
+            fallback = missing_rows.merge(
+                ref_freq,
                 how="left",
                 left_on="Частота/маска",
                 right_on="Частота",
             )
 
-            # переносимо знайдені значення
-            merged.loc[mask_missing, "Підрозділ"] = fallback["Підрозділ"].values
-            merged.loc[mask_missing, "Хто"] = fallback["Хто"].values
+            # присвоєння 1:1 (довжини гарантовано однакові)
+            merged.loc[mask_missing, "Підрозділ"] = fallback["Підрозділ"].to_numpy()
+            merged.loc[mask_missing, "Хто"] = fallback["Хто"].to_numpy()
 
     # перейменовуємо "Хто" у "Група"
     if "Хто" in merged.columns:
@@ -237,11 +247,34 @@ def build_enemy_moves_report_docx(config_path: str) -> Path:
     li = load_inputs(config_path)
 
     # 2. Завантаження moves.xlsx з поточної папки модуля
-    moves_path = Path(__file__).parent / "moves.xlsx"
-    if not moves_path.exists():
-        raise FileNotFoundError(f"Файл з переміщеннями не знайдено: {moves_path}")
+    # moves_path = Path(__file__).parent / "moves.xlsx"
+    # if not moves_path.exists():
+    #     raise FileNotFoundError(f"Файл з переміщеннями не знайдено: {moves_path}")
 
-    moves_df = pd.read_excel(moves_path)
+    # moves_df = pd.read_excel(moves_path)
+    
+    moves_path = Path(__file__).parent / "moves.xlsx"  # дефолт для xlsx-режиму
+    # moves_df = load_moves_df(cfg, default_xlsx_path=moves_path)
+    moves_df = load_moves_df(cfg, config_path=config_path, default_xlsx_path=moves_path)
+    
+    
+    from src.armorkit.normalize_freq import normalize_numeric_column
+
+    moves_df = load_moves_df(cfg, config_path=config_path, default_xlsx_path=moves_path)
+
+    # 1) нормалізуємо текст (щоб NaN не став "nan")
+    moves_df["Переміщення"] = moves_df["Переміщення"].fillna("").astype(str).str.strip()
+
+    # 2) нормалізуємо число універсально (кома/крапка/NBSP)
+    normalize_numeric_column(moves_df, "Частота/маска")
+
+    # 3) відсікаємо хвіст
+    moves_df = moves_df[
+        moves_df["Частота/маска"].notna()
+        & (moves_df["Переміщення"] != "")
+    ].copy()
+    
+    
 
     # перевіряємо мінімально необхідні колонки
     required_cols = {"Частота/маска", "Переміщення"}

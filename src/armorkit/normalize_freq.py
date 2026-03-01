@@ -182,3 +182,49 @@ def normalize_frequency_column(intercepts_df: pd.DataFrame, ref_df: pd.DataFrame
         intercepts_df.at[i, "Частота"] = true_f
 
     return intercepts_df
+
+
+def normalize_numeric_value(value, *, to_float: bool = True):
+    """
+    Нормалізує одне числове значення:
+    - прибирає пробіли / NBSP
+    - замінює кому на крапку
+    - опційно приводить до float
+
+    Якщо to_float=True -> повертає float
+    Якщо to_float=False -> повертає нормалізований рядок
+    """
+
+    if value is None:
+        return None
+
+    if isinstance(value, float):
+        # якщо вже float — просто повертаємо
+        return value if to_float else str(value)
+
+    s = str(value).strip()
+    if not s:
+        return None
+
+    s = s.replace("\u00a0", "")  # NBSP
+    s = s.replace(" ", "")
+    s = s.replace(",", ".")
+
+    if not to_float:
+        return s
+
+    try:
+        return float(s)
+    except ValueError:
+        raise ValueError(f"Неможливо привести значення '{value}' до float після нормалізації")
+    
+    
+def normalize_numeric_column(df: pd.DataFrame, column: str, *, to_float: bool = True) -> pd.DataFrame:
+    """
+    Нормалізує всю колонку через normalize_numeric_value.
+    """
+    if column not in df.columns:
+        raise KeyError(f"У DataFrame відсутня колонка '{column}'")
+
+    df[column] = df[column].apply(lambda x: normalize_numeric_value(x, to_float=to_float))
+    return df

@@ -1,0 +1,7 @@
+[INFO] Start 20260301_075343 
+[INFO] Workdir: D:\Armor\main-report 
+WARNING: Є 2 запис(ів) у moves.xlsx, для яких не знайдено групу в довіднику. Частоти/маски: 146.636, 147.272
+DEBUG: Loaded masks_df with 43 rows
+[OK] Звіт про переміщення ворога збережено: build\Переміщення ворога (01.03.2026).docx
+
+[INFO] ExitCode=0 

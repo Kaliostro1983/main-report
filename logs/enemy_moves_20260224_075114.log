@@ -1,0 +1,10 @@
+[INFO] Start 20260224_075114 
+[INFO] Workdir: D:\Armor\main-report 
+DEBUG: Loaded masks_df with 43 rows
+CONFIG : config.yml
+FREQ   : d:\Armor\Frequencies_63.xlsx | shape: (126, 14)
+REPORT : c:\Downloads\report_2026-02-12T15-30_2026-02-19T15-30.xlsx | shape: (7816, 11)
+Reference columns: ['Частота', 'Маска_3', 'Маска_Ш', 'Чат', 'Дешифрування', 'Початок', 'Підрозділ', 'Хто', 'Зона функціонування', 'Статус', 'Слухає', 'Теги']
+Intercepts columns: ['Дата', 'Час', 'Частота', 'Назва р\\м', 'хто', 'кому', 'р\\обмін', 'примітки', 'координати', 'теги', 'важливе']
+
+[INFO] ExitCode=0 
