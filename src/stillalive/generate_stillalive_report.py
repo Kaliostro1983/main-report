@@ -1,5 +1,3 @@
-# src/stillalive/generate_stillalive_report.py
-
 from pathlib import Path
 import pandas as pd
 from openpyxl import Workbook
@@ -14,11 +12,27 @@ from src.armorkit.dates import parse_period_from_filename, format_for_filename
 def _get_observed_frequencies(reference_df: pd.DataFrame) -> pd.DataFrame:
     """
     Вибирає частоти, які перебувають на спостереженні (Статус == 'Спостерігається').
-    Повертає датафрейм з колонками 'Частота', 'Маска_3'.
+
+    Повертає датафрейм з колонками:
+    - 'Частота'
+    - 'Маска_3'
+    - 'Підрозділ' (якщо є у reference_df)
+    - 'Дешифрування' (якщо є у reference_df)
     """
     observed = reference_df[reference_df["Статус"] == "Спостерігається"].copy()
-    observed = observed[["Частота", "Маска_3"]].drop_duplicates(subset=["Частота"], keep="first")
+
+    # Додаємо нові поля, якщо їх немає в довіднику — створюємо порожні
+    if "Підрозділ" not in observed.columns:
+        observed["Підрозділ"] = ""
+    if "Дешифрування" not in observed.columns:
+        observed["Дешифрування"] = ""
+
+    observed = observed[["Частота", "Маска_3", "Підрозділ", "Дешифрування"]].drop_duplicates(
+        subset=["Частота"], keep="first"
+    )
     observed["Частота"] = observed["Частота"].astype(str)
+    observed["Підрозділ"] = observed["Підрозділ"].astype(str).fillna("")
+    observed["Дешифрування"] = observed["Дешифрування"].astype(str).fillna("")
     return observed
 
 
@@ -28,8 +42,11 @@ def _prepare_daily_counts(intercepts_df: pd.DataFrame,
     Формує підсумковий датафрейм у wide-форматі:
     - "Частота"
     - "Маска"
+    - "Підрозділ"
+    - "Дешифрування"
     - далі по одній колонці на кожен день періоду (формат "dd.mm")
-    Значення = кількість перехоплень цієї частоти у цю дату.
+      Значення = кількість перехоплень цієї частоти у цю дату.
+
     ВАЖЛИВО: включаємо всі частоти зі статусом "Спостерігається",
     навіть якщо перехоплень по них 0.
     """
@@ -86,11 +103,17 @@ def _prepare_daily_counts(intercepts_df: pd.DataFrame,
         aggfunc="sum"
     ).reset_index()
 
-    # Додаємо маску
+    # Мапи з довідника частот
     mask_map = freqs_df.set_index("Частота")["Маска_3"].to_dict()
-    pivot.insert(1, "Маска", pivot["Частота"].map(mask_map).fillna(""))
+    unit_map = freqs_df.set_index("Частота")["Підрозділ"].to_dict() if "Підрозділ" in freqs_df.columns else {}
+    dec_map = freqs_df.set_index("Частота")["Дешифрування"].to_dict() if "Дешифрування" in freqs_df.columns else {}
 
-    final_cols = ["Частота", "Маска"] + all_days
+    # Додаємо службові колонки зліва
+    pivot.insert(1, "Маска", pivot["Частота"].map(mask_map).fillna(""))
+    pivot.insert(2, "Підрозділ", pivot["Частота"].map(unit_map).fillna(""))
+    pivot.insert(3, "Дешифрування", pivot["Частота"].map(dec_map).fillna(""))
+
+    final_cols = ["Частота", "Маска", "Підрозділ", "Дешифрування"] + all_days
     pivot = pivot[final_cols]
 
     return pivot
@@ -100,8 +123,10 @@ def _export_to_xlsx(df: pd.DataFrame, period_start: str, period_end: str, output
     """
     Записує df у Excel з форматуванням:
     - Заголовки колонок жирним.
-    - Колонки "Частота" і "Маска" — жирним у всіх рядках.
+    - Колонки: "Частота", "Маска", "Підрозділ", "Дешифрування" — жирним у всіх рядках.
     - Комірки дат: 0 -> червоний фон, >0 -> зелений фон.
+    - Якщо "Дешифрування" != 'так' (регістр/пробіли ігноруємо), то
+      комірки "Частота", "Маска", "Підрозділ", "Дешифрування" — червоний фон.
     """
 
     start_s = format_for_filename(period_start)
@@ -128,14 +153,26 @@ def _export_to_xlsx(df: pd.DataFrame, period_start: str, period_end: str, output
     for c in range(1, n_cols + 1):
         ws.cell(row=1, column=c).font = bold_font
 
-    # Колонки "Частота" і "Маска"
+    # Службові колонки (1..4) — жирним
+    meta_cols = 4 if n_cols >= 4 else n_cols
     for r in range(1, n_rows + 1):
-        ws.cell(row=r, column=1).font = bold_font
-        ws.cell(row=r, column=2).font = bold_font
+        for c in range(1, meta_cols + 1):
+            ws.cell(row=r, column=c).font = bold_font
 
-    # Підсвітка значень
+    # Якщо дешифрування НЕ "так" — підсвічуємо 1..4 червоним
+    # (значення беремо з колонки 4)
+    if n_cols >= 4:
+        for r in range(2, n_rows + 1):
+            dec_val = ws.cell(row=r, column=4).value
+            dec_norm = str(dec_val).strip().lower() if dec_val is not None else ""
+            if dec_norm != "так":
+                for c in range(1, 5):
+                    ws.cell(row=r, column=c).fill = red_fill
+
+    # Підсвітка значень по днях (починаючи з 5-ї колонки)
+    day_start_col = 5 if n_cols >= 5 else (meta_cols + 1)
     for r in range(2, n_rows + 1):
-        for c in range(3, n_cols + 1):
+        for c in range(day_start_col, n_cols + 1):
             cell = ws.cell(row=r, column=c)
             try:
                 num = int(cell.value)

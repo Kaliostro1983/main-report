@@ -17,7 +17,7 @@ def _add_header(doc: Document) -> None:
     normal.font.size = Pt(12)
     normal.font.name = "Times New Roman"
 
-    p = doc.add_paragraph("Форма 1.2.15")
+    p = doc.add_paragraph("Форма 1.2.13")
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
     doc.add_paragraph("")
