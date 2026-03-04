@@ -179,7 +179,7 @@ def run(input_txt: Path, out_dir: Path | None = None) -> Path:
         raise RuntimeError("Немає активних постів у posts.json. Увімкни хоча б 1 пост.")
 
     today = datetime.now().strftime("%d.%m.%Y")
-    out_path = _next_free_path(out_dir / f"форма_1.2.15 {today}.docx")
+    out_path = _next_free_path(out_dir / f"форма_1.2.13 {today}.docx")
 
     print(f"[i] Using input: {input_txt}")
 
